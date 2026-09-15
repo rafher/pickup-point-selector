@@ -84,8 +84,9 @@
 
 @media (min-width: 640px) {
   .pickup-point-modal {
+    max-width: 60rem;
     border-radius: 12px;
-    max-height: 85vh;
+    max-height: 88vh;
   }
 }
 
@@ -251,6 +252,16 @@
   min-height: 20rem;
   border-radius: 8px;
   overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .pickup-point-map-wrapper {
+    min-height: 32rem;
+  }
+
+  .pickup-point-map {
+    min-height: 30rem;
+  }
 }
 
 .pickup-point-map .leaflet-popup-content {
