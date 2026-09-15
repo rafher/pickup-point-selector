@@ -1,0 +1,305 @@
+.pickup-point-picker {
+  --pickup-point-accent: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 1rem 0;
+  max-width: 28rem;
+  font-family: inherit;
+}
+
+.pickup-point-picker__label {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.pickup-point-picker__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pickup-point-picker__trigger:hover,
+.pickup-point-picker__trigger:focus-visible {
+  border-color: var(--pickup-point-accent);
+  outline: none;
+}
+
+.pickup-point-picker__trigger[data-selected="true"] {
+  border-color: var(--pickup-point-accent);
+}
+
+.pickup-point-picker__chevron {
+  opacity: 0.6;
+}
+
+.pickup-point-picker__hint {
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+
+/* ---------------------------------------------------------------------
+   Modal
+--------------------------------------------------------------------- */
+
+.pickup-point-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 9999;
+  padding: 0;
+}
+
+@media (min-width: 640px) {
+  .pickup-point-modal-overlay {
+    align-items: center;
+    padding: 1.5rem;
+  }
+}
+
+.pickup-point-modal {
+  background: var(--pickup-point-modal-bg, #fff);
+  color: var(--pickup-point-modal-fg, #1a1a1a);
+  width: 100%;
+  max-width: 42rem;
+  max-height: 90vh;
+  border-radius: 12px 12px 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .pickup-point-modal {
+    border-radius: 12px;
+    max-height: 85vh;
+  }
+}
+
+.pickup-point-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.pickup-point-modal__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.pickup-point-modal__close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+  padding: 0.25rem 0.5rem;
+}
+
+.pickup-point-modal__tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.75rem 1.25rem 0;
+}
+
+.pickup-point-modal__tab {
+  flex: 1;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: transparent;
+  color: inherit;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.pickup-point-modal__tab[aria-selected="true"] {
+  background: var(--pickup-point-accent);
+  border-color: var(--pickup-point-accent);
+  color: #fff;
+}
+
+.pickup-point-modal__search {
+  padding: 0.85rem 1.25rem 0;
+}
+
+.pickup-point-modal__search input {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.pickup-point-modal__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.pickup-point-modal__status {
+  padding: 2rem 0;
+  text-align: center;
+  opacity: 0.75;
+  font-size: 0.9rem;
+}
+
+.pickup-point-modal__status[data-tone="error"] {
+  color: #b42318;
+  opacity: 1;
+}
+
+/* Lista */
+
+.pickup-point-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pickup-point-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+}
+
+.pickup-point-card[data-selected="true"] {
+  border-color: var(--pickup-point-accent);
+  box-shadow: 0 0 0 1px var(--pickup-point-accent);
+}
+
+.pickup-point-card__name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.pickup-point-card__top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.pickup-point-card__carrier {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  opacity: 0.6;
+}
+
+.pickup-point-card__distance {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--pickup-point-accent);
+  white-space: nowrap;
+}
+
+.pickup-point-card__address,
+.pickup-point-card__hours {
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.pickup-point-card__select {
+  align-self: flex-start;
+  margin-top: 0.35rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid var(--pickup-point-accent);
+  background: transparent;
+  color: var(--pickup-point-accent);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.pickup-point-card[data-selected="true"] .pickup-point-card__select {
+  background: var(--pickup-point-accent);
+  color: #fff;
+}
+
+/* Mapa */
+
+.pickup-point-map-wrapper {
+  height: 100%;
+  min-height: 22rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.pickup-point-map {
+  flex: 1;
+  min-height: 20rem;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.pickup-point-map .leaflet-popup-content {
+  font-size: 0.85rem;
+}
+
+.pickup-point-map-popup__distance {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--pickup-point-accent);
+  margin: 0.1rem 0 0.2rem;
+}
+
+.pickup-point-map-popup__select {
+  margin-top: 0.4rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 6px;
+  border: 1px solid var(--pickup-point-accent);
+  background: var(--pickup-point-accent);
+  color: #fff;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.pickup-point-modal__footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.pickup-point-modal__confirm {
+  padding: 0.65rem 1.4rem;
+  border-radius: 6px;
+  border: none;
+  background: var(--pickup-point-accent);
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.pickup-point-modal__confirm:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (prefers-color-scheme: dark) {
+  .pickup-point-modal {
+    --pickup-point-modal-bg: #1e1e1e;
+    --pickup-point-modal-fg: #f5f5f5;
+  }
+}

@@ -1,0 +1,161 @@
+{% comment %}
+  Bloque de aplicación: Selector de punto de recogida.
+
+  Pensado para añadirse desde el editor de temas a la sección del carrito
+  (Carrito) de cualquier tema Online Store 2.0. Al pulsar el campo se abre
+  un selector con dos vistas — lista y mapa — con los puntos de recogida
+  que devuelve el proxy de la app (ver web/app/routes/proxy.points.tsx).
+
+  El punto elegido se guarda como atributo del pedido mediante la Cart AJAX
+  API (/cart/update.js), así que no depende de que este bloque quede
+  dentro del <form> nativo del carrito del tema.
+
+  Distancia: si el cliente tiene sesión iniciada y dirección guardada, se
+  usa su código postal/ciudad para pedir los puntos ya ordenados de menor
+  a mayor distancia (ver web/app/services/geo.server.ts). Si no, el propio
+  buscador del selector permite escribir un CP/ciudad para recalcular el
+  orden al momento.
+{% endcomment %}
+
+{{ 'pickup-point-picker.css' | asset_url | stylesheet_tag }}
+
+<div
+  class="pickup-point-picker"
+  data-pickup-point-picker
+  data-block-id="{{ block.id }}"
+  data-proxy-url="/apps/pickup-points/points"
+  data-default-view="{{ block.settings.default_view }}"
+  data-cart-attribute="{{ block.settings.cart_attribute_name | default: 'Punto de recogida' | escape }}"
+  data-label="{{ block.settings.label | escape }}"
+  data-placeholder="{{ block.settings.placeholder | escape }}"
+  data-modal-title="{{ block.settings.modal_title | escape }}"
+  data-cta-label="{{ block.settings.cta_label | escape }}"
+  data-list-tab-label="{{ block.settings.list_tab_label | escape }}"
+  data-map-tab-label="{{ block.settings.map_tab_label | escape }}"
+  data-error-message="{{ block.settings.error_message | escape }}"
+  data-search-placeholder="{{ block.settings.search_placeholder | escape }}"
+  data-distance-label="{{ block.settings.distance_label | escape }}"
+  data-customer-postal-code="{{ customer.default_address.zip | escape }}"
+  data-customer-city="{{ customer.default_address.city | escape }}"
+  style="--pickup-point-accent: {{ block.settings.accent_color }};"
+  {{ block.shopify_attributes }}
+>
+  <label class="pickup-point-picker__label" for="PickupPointTrigger-{{ block.id }}">
+    {{ block.settings.label }}
+  </label>
+
+  <button
+    type="button"
+    id="PickupPointTrigger-{{ block.id }}"
+    class="pickup-point-picker__trigger"
+    data-pickup-point-trigger
+    aria-haspopup="dialog"
+  >
+    <span data-pickup-point-selected-text>{{ block.settings.placeholder }}</span>
+    <span class="pickup-point-picker__chevron" aria-hidden="true">›</span>
+  </button>
+
+  <p class="pickup-point-picker__hint" data-pickup-point-hint hidden></p>
+</div>
+
+<script src="{{ 'pickup-point-picker.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Punto de recogida",
+  "target": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Textos"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Etiqueta del campo",
+      "default": "Punto de recogida"
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Texto cuando no hay selección",
+      "default": "Selecciona un punto de recogida"
+    },
+    {
+      "type": "text",
+      "id": "modal_title",
+      "label": "Título del selector",
+      "default": "Elige tu punto de recogida"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "Texto del botón de confirmación",
+      "default": "Confirmar punto de recogida"
+    },
+    {
+      "type": "text",
+      "id": "list_tab_label",
+      "label": "Texto de la pestaña de lista",
+      "default": "Lista"
+    },
+    {
+      "type": "text",
+      "id": "map_tab_label",
+      "label": "Texto de la pestaña de mapa",
+      "default": "Mapa"
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Texto del buscador",
+      "info": "El buscador filtra los puntos y, además, calcula la distancia desde ese código postal/ciudad.",
+      "default": "Tu código postal o ciudad"
+    },
+    {
+      "type": "text",
+      "id": "distance_label",
+      "label": "Formato de la distancia",
+      "info": "Usa {km} donde debe ir el número, por ejemplo \"a {km} km\".",
+      "default": "a {km} km"
+    },
+    {
+      "type": "text",
+      "id": "error_message",
+      "label": "Mensaje de error al cargar los puntos",
+      "default": "No se han podido cargar los puntos de recogida. Inténtalo de nuevo."
+    },
+    {
+      "type": "header",
+      "content": "Comportamiento"
+    },
+    {
+      "type": "select",
+      "id": "default_view",
+      "label": "Vista inicial",
+      "options": [
+        { "value": "list", "label": "Lista" },
+        { "value": "map", "label": "Mapa" }
+      ],
+      "default": "list"
+    },
+    {
+      "type": "text",
+      "id": "cart_attribute_name",
+      "label": "Nombre del atributo del pedido",
+      "info": "Así aparecerá el punto elegido en el pedido, dentro del Admin de Shopify.",
+      "default": "Punto de recogida"
+    },
+    {
+      "type": "header",
+      "content": "Estilo"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Color de acento",
+      "default": "#1a1a1a"
+    }
+  ]
+}
+{% endschema %}

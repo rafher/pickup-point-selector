@@ -1,0 +1,173 @@
+import type { PickupPoint } from "./pickupPoints.server";
+
+/**
+ * Listado de puntos de recogida de DEMOSTRACIÓN.
+ *
+ * Se usa mientras el servicio web real de la agencia de transporte no está
+ * disponible (ver services/pickupPoints.server.ts). Las coordenadas son
+ * aproximadas y sirven únicamente para poder probar la vista de lista y la
+ * vista de mapa de principio a fin; sustitúyelo cuando conectes el
+ * servicio real.
+ */
+export const MOCK_PICKUP_POINTS: PickupPoint[] = [
+  {
+    id: "demo-mad-001",
+    name: "Punto de recogida Sol",
+    carrier: "Demo Carrier",
+    address: {
+      line1: "Puerta del Sol, 1",
+      city: "Madrid",
+      province: "Madrid",
+      postalCode: "28013",
+      countryCode: "ES",
+    },
+    lat: 40.4169,
+    lng: -3.7035,
+    openingHours: ["Lun-Vie 09:00-14:00 y 17:00-20:00", "Sáb 10:00-14:00"],
+    phone: "+34 910 000 001",
+  },
+  {
+    id: "demo-mad-002",
+    name: "Punto de recogida Atocha",
+    carrier: "Demo Carrier",
+    address: {
+      line1: "Plaza del Emperador Carlos V, 1",
+      city: "Madrid",
+      province: "Madrid",
+      postalCode: "28045",
+      countryCode: "ES",
+    },
+    lat: 40.4066,
+    lng: -3.6906,
+    openingHours: ["Lun-Sáb 08:30-21:00"],
+    phone: "+34 910 000 002",
+  },
+  {
+    id: "demo-bcn-001",
+    name: "Punto de recogida Gòtic",
+    carrier: "Demo Carrier",
+    address: {
+      line1: "Plaça de Sant Jaume, 1",
+      city: "Barcelona",
+      province: "Barcelona",
+      postalCode: "08002",
+      countryCode: "ES",
+    },
+    lat: 41.3825,
+    lng: 2.1769,
+    openingHours: ["Lun-Vie 09:00-13:30 y 16:30-20:00"],
+    phone: "+34 930 000 001",
+  },
+  {
+    id: "demo-bcn-002",
+    name: "Punto de recogida Sants",
+    carrier: "Demo Carrier",
+    address: {
+      line1: "Plaça dels Països Catalans, 1",
+      city: "Barcelona",
+      province: "Barcelona",
+      postalCode: "08014",
+      countryCode: "ES",
+    },
+    lat: 41.3792,
+    lng: 2.1401,
+    openingHours: ["Lun-Sáb 08:00-21:30"],
+    phone: "+34 930 000 002",
+  },
+  {
+    id: "demo-vlc-001",
+    name: "Punto de recogida Ayuntamiento",
+    carrier: "Demo Carrier",
+    address: {
+      line1: "Plaça de l'Ajuntament, 1",
+      city: "Valencia",
+      province: "Valencia",
+      postalCode: "46002",
+      countryCode: "ES",
+    },
+    lat: 39.4699,
+    lng: -0.3763,
+    openingHours: ["Lun-Vie 09:30-14:00 y 17:00-20:30"],
+    phone: "+34 960 000 001",
+  },
+  {
+    id: "demo-sev-001",
+    name: "Punto de recogida Catedral",
+    carrier: "Demo Carrier",
+    address: {
+      line1: "Av. de la Constitución, 1",
+      city: "Sevilla",
+      province: "Sevilla",
+      postalCode: "41004",
+      countryCode: "ES",
+    },
+    lat: 37.3859,
+    lng: -5.9926,
+    openingHours: ["Lun-Sáb 09:00-14:00 y 17:00-20:00"],
+    phone: "+34 950 000 001",
+  },
+  {
+    id: "demo-bil-001",
+    name: "Punto de recogida Abando",
+    carrier: "Demo Carrier",
+    address: {
+      line1: "Plaza Circular, 1",
+      city: "Bilbao",
+      province: "Bizkaia",
+      postalCode: "48001",
+      countryCode: "ES",
+    },
+    lat: 43.2601,
+    lng: -2.9238,
+    openingHours: ["Lun-Vie 09:00-13:30 y 16:00-19:30"],
+    phone: "+34 940 000 001",
+  },
+  {
+    id: "demo-zgz-001",
+    name: "Punto de recogida Pilar",
+    carrier: "Demo Carrier",
+    address: {
+      line1: "Plaza del Pilar, 1",
+      city: "Zaragoza",
+      province: "Zaragoza",
+      postalCode: "50003",
+      countryCode: "ES",
+    },
+    lat: 41.6563,
+    lng: -0.8781,
+    openingHours: ["Lun-Sáb 09:00-14:00"],
+    phone: "+34 976 000 001",
+  },
+  {
+    id: "demo-mlg-001",
+    name: "Punto de recogida Centro",
+    carrier: "Demo Carrier",
+    address: {
+      line1: "Calle Larios, 1",
+      city: "Málaga",
+      province: "Málaga",
+      postalCode: "29005",
+      countryCode: "ES",
+    },
+    lat: 36.7196,
+    lng: -4.4214,
+    openingHours: ["Lun-Vie 10:00-14:00 y 17:00-20:30"],
+    phone: "+34 952 000 001",
+  },
+  {
+    id: "demo-cor-001",
+    name: "Punto de recogida María Pita",
+    carrier: "Demo Carrier",
+    address: {
+      line1: "Praza de María Pita, 1",
+      city: "A Coruña",
+      province: "A Coruña",
+      postalCode: "15001",
+      countryCode: "ES",
+    },
+    lat: 43.3714,
+    lng: -8.3958,
+    openingHours: ["Lun-Vie 09:00-14:00 y 16:30-20:00"],
+    phone: "+34 981 000 001",
+  },
+];

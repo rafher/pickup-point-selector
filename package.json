@@ -1,0 +1,22 @@
+{
+  "name": "pickup-point-selector-app",
+  "private": true,
+  "workspaces": [
+    "web"
+  ],
+  "scripts": {
+    "dev": "shopify app dev",
+    "build": "shopify app build",
+    "deploy": "shopify app deploy",
+    "config:link": "shopify app config link",
+    "config:use": "shopify app config use",
+    "info": "shopify app info",
+    "generate": "shopify app generate"
+  },
+  "devDependencies": {
+    "@shopify/cli": "^3.71.0"
+  },
+  "engines": {
+    "node": "^18.20 || ^20.10 || >=21.0.0"
+  }
+}

@@ -1,0 +1,30 @@
+# Blueprint de Render (https://render.com/docs/blueprint-spec).
+# Al conectar este repositorio en Render como "Blueprint", detecta este
+# fichero y preconfigura el servicio web solo — build, start, y qué
+# variables de entorno debe pedirte. No hace falta tocar nada aquí salvo
+# que cambies de plan o de proveedor de base de datos.
+services:
+  - type: web
+    name: pickup-point-selector
+    runtime: node
+    plan: free
+    rootDir: web
+    buildCommand: npm install && npx prisma generate && npx prisma migrate deploy && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: 20.17.0
+      - key: SHOPIFY_API_KEY
+        sync: false
+      - key: SHOPIFY_API_SECRET
+        sync: false
+      - key: SCOPES
+        sync: false
+      - key: SHOPIFY_APP_URL
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: PICKUP_POINTS_API_URL
+        sync: false
+      - key: PICKUP_POINTS_API_KEY
+        sync: false

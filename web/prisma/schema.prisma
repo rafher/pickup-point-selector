@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Requerido por @shopify/shopify-app-session-storage-prisma para persistir
+// las sesiones OAuth (online y offline) de cada tienda instalada.
+model Session {
+  id            String    @id
+  shop          String
+  state         String
+  isOnline      Boolean   @default(false)
+  scope         String?
+  expires       DateTime?
+  accessToken   String
+  userId        BigInt?
+  firstName     String?
+  lastName      String?
+  email         String?
+  accountOwner  Boolean   @default(false)
+  locale        String?
+  collaborator  Boolean?  @default(false)
+  emailVerified Boolean?  @default(false)
+}
+
+// Configuración propia de la app por cada tienda: dónde está el servicio
+// web real de puntos de recogida de la agencia de transporte, y algunas
+// preferencias del bloque de carrito.
+model ShopSettings {
+  id           String   @id @default(cuid())
+  shop         String   @unique
+  pickupApiUrl String?
+  pickupApiKey String?
+  defaultView  String   @default("list") // "list" | "map"
+  updatedAt    DateTime @updatedAt
+}

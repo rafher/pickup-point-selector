@@ -1,0 +1,55 @@
+.index {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background: #f6f6f7;
+}
+
+.content {
+  max-width: 32rem;
+  text-align: center;
+}
+
+.heading {
+  font-size: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.text {
+  color: #4a4a4a;
+  margin-bottom: 1.5rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.input {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #c9cccf;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.button {
+  padding: 0.6rem 0.75rem;
+  border: none;
+  border-radius: 6px;
+  background: #1a1a1a;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}

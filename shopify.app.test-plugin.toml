@@ -1,0 +1,51 @@
+# Config as code de Shopify CLI para esta app (vinculada a la organización
+# Datadec S.A. en Partners). Es el ÚNICO fichero de config activo del
+# proyecto — se generó al ejecutar `shopify app config link` y crear la
+# app nueva; sustituye por completo al `shopify.app.toml` original
+# escrito a mano (que ya no se usa).
+#
+# `application_url`/`[auth].redirect_urls`/`[app_proxy].url` se rellenan
+# solos en cada `shopify app dev` gracias a `automatically_update_urls_on_dev`.
+# Cuando despleguemos a un hosting real (Render), hay que poner ahí la URL
+# definitiva y ejecutar `shopify app deploy` una vez para publicarla.
+
+client_id = "0249018a05a22cbdb144d9ffc8542599"
+application_url = "https://REPLACE-WITH-RENDER-URL.onrender.com"
+embedded = true
+name = "Selector de punto de recogida"
+
+[access_scopes]
+# El MVP no necesita leer ni escribir datos del comercio: el bloque de
+# carrito habla con el proxy de la app y esta guarda su configuración en
+# su propia base de datos. Vacío a propósito.
+scopes = ""
+
+[auth]
+redirect_urls = [
+  "https://REPLACE-WITH-RENDER-URL.onrender.com/auth/callback",
+  "https://REPLACE-WITH-RENDER-URL.onrender.com/auth/shopify/callback",
+  "https://REPLACE-WITH-RENDER-URL.onrender.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2026-10"
+
+  [[webhooks.subscriptions]]
+  topics = ["app/uninstalled"]
+  uri = "/webhooks/app/uninstalled"
+
+# App Proxy: hace que las peticiones del storefront a
+#   https://<tienda>.myshopify.com/apps/pickup-points/*
+# se reenvíen (mismo origen para el navegador, sin problemas de CORS) a
+#   <url>/*
+[app_proxy]
+url = "https://REPLACE-WITH-RENDER-URL.onrender.com/proxy"
+subpath = "pickup-points"
+prefix = "apps"
+
+[build]
+include_config_on_deploy = true
+automatically_update_urls_on_dev = true
+
+[pos]
+embedded = false

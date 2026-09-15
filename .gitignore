@@ -1,0 +1,26 @@
+node_modules/
+.env
+.env.*
+!.env.example
+!web/.env.example
+
+# Herramientas/config de máquina ajenas a este proyecto (Cursor de Datadec,
+# sincronizado automáticamente en el directorio de trabajo).
+.cursor/
+
+# Shopify CLI
+.shopify/
+web/.shopify/
+
+# Remix / Vite build output
+web/build/
+web/.cache/
+web/public/build/
+
+# Prisma / SQLite dev db
+web/prisma/dev.sqlite
+web/prisma/dev.sqlite-journal
+
+# Editor / OS
+.DS_Store
+*.log
