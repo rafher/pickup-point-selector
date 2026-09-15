@@ -131,13 +131,18 @@ Requisitos: Node 18.20+/20.10+, cuenta de Shopify Partners y una tienda
 de desarrollo (que ya tienes).
 
 ```bash
-npm install                 # instala también las dependencias de web/ (workspaces)
+npm install                 # CLI de Shopify (raíz)
+cd web && npm install && cd ..   # dependencias del backend — carpeta aparte, no es un workspace de npm
 npm run config:link         # vincula esta carpeta a una app de tu cuenta de Partners
-                             # (rellena client_id/application_url en shopify.app.toml)
+                             # (rellena client_id/application_url en shopify.app.<nombre>.toml)
 cp web/.env.example web/.env
-cd web && npx prisma migrate dev --name init && cd ..
+# Rellena DATABASE_URL/DIRECT_DATABASE_URL con una base de datos Postgres
+# (Neon u otra — ver "Despliegue en Render" más abajo) y aplica la migración:
+cd web && npx prisma migrate deploy && cd ..
 npm run dev                 # shopify app dev: levanta el túnel y abre la instalación en tu tienda
 ```
+
+`web/` es una carpeta independiente a propósito, no un workspace de npm — así el build de hosting (Render u otro) solo ve esa carpeta y no se confunde intentando instalar en la raíz del repo.
 
 Con `shopify app dev` corriendo:
 
@@ -210,7 +215,7 @@ CLI ni `npm install`. Primer paso recomendado al abrirlo con conexión:
 
 ```bash
 npm install
-npm run -w web typecheck
+cd web && npm install && npm run typecheck
 ```
 
 y resolver cualquier pequeño desajuste de versión que aparezca antes de

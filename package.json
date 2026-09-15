@@ -1,9 +1,6 @@
 {
   "name": "pickup-point-selector-app",
   "private": true,
-  "workspaces": [
-    "web"
-  ],
   "scripts": {
     "dev": "shopify app dev",
     "build": "shopify app build",
