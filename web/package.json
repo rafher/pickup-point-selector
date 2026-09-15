@@ -43,6 +43,6 @@
     "vite-tsconfig-paths": "^4.3.1"
   },
   "engines": {
-    "node": "^18.20 || ^20.10 || >=21.0.0"
+    "node": "20.x"
   }
 }

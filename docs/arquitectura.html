@@ -1,0 +1,397 @@
+<!doctype html>
+<!--
+  Informe de arquitectura del "Selector de punto de recogida" (app de Shopify).
+  Basado en el esqueleto de informe de Datadec. El <style> no se toca salvo
+  para anadir.
+
+  Exportar:
+    chrome --headless --disable-gpu --no-pdf-header-footer \
+      --user-data-dir=<temporal> --print-to-pdf=arquitectura.pdf \
+      "file:///<ruta absoluta>/arquitectura.html"
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Selector de punto de recogida — arquitectura</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+:root{
+  --primary:#27348B; --secondary:#488d92; --tertiary:#E59A28;
+  --text:#24324C; --text-2:#697181; --text-3:#8d94a3; --text-4:#D9DAE1;
+  --border:hsl(0,0%,88%); --border-100:hsl(0,0%,96%);
+  --ok:#44A11B; --err:#B30000; --r:4px;
+}
+@page{ size:A4 portrait; margin:13mm; }
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+body{
+  font-family:'Montserrat',system-ui,'Segoe UI',sans-serif;
+  color:var(--text); background:#fff; font-size:10.5px; line-height:1.45;
+  -webkit-print-color-adjust:exact; print-color-adjust:exact;
+}
+.page{ page-break-after:always; }
+.page:last-child{ page-break-after:auto; }
+
+.head{ display:flex; align-items:baseline; justify-content:space-between;
+  border-bottom:1px solid var(--border-100); padding-bottom:6px; margin-bottom:12px; }
+.head .brand{ font-weight:700; font-size:13px; color:var(--primary); letter-spacing:.5px; }
+.head .doc{ font-size:9px; color:var(--text-3); }
+
+.eyebrow{ font-size:9px; letter-spacing:1.2px; text-transform:uppercase;
+  color:var(--secondary); font-weight:600; }
+h1{ font-size:21px; line-height:1.25; font-weight:700; margin:5px 0 4px; }
+.lead{ font-size:12px; color:var(--text-2); margin:0 0 8px; }
+.meta{ font-size:9px; color:var(--text-3); margin-bottom:12px; }
+h2{ font-size:14px; font-weight:600; margin:0 0 7px; }
+h3{ font-size:11px; font-weight:600; color:var(--primary); margin:9px 0 4px; }
+p{ margin:0 0 7px; }
+.muted{ color:var(--text-2); }
+
+.card{ border:1px solid var(--border-100); border-radius:var(--r);
+  box-shadow:0 0 25px 0 rgba(217,218,225,.5); padding:10px 12px; margin-bottom:10px; }
+.card--flat{ box-shadow:none; border:1px solid var(--border); }
+.card--key{ box-shadow:none; border:1px solid var(--tertiary); background:#FDF9F2; }
+.card--key h2{ color:#9A6410; }
+
+ul{ margin:0 0 7px; padding-left:15px; }
+li{ margin-bottom:2px; }
+li::marker{ color:var(--secondary); }
+
+table{ width:100%; border-collapse:collapse; font-size:9.5px; margin-bottom:5px; }
+th{ text-align:left; font-weight:600; font-size:8.5px; letter-spacing:.4px;
+  text-transform:uppercase; color:var(--text-2);
+  border-bottom:1px solid var(--border); padding:4px 5px; }
+td{ padding:4px 5px; border-bottom:1px solid var(--border-100); vertical-align:top; }
+td.k{ font-weight:600; }
+code{ font-family:ui-monospace,Consolas,monospace; font-size:9px;
+  background:var(--border-100); padding:0 3px; border-radius:2px; }
+
+.tag{ display:inline-block; padding:1px 6px; border-radius:var(--r);
+  font-size:8.5px; font-weight:600; white-space:nowrap; }
+.tag--ok{ background:#EAF6E6; color:#2F7A14; border:1px solid var(--ok); }
+.tag--wait{ background:#FDF4E6; color:#9A6410; border:1px solid var(--tertiary); }
+.tag--no{ background:#FBE9E9; color:var(--err); border:1px solid var(--err); }
+.tag--flat{ background:#EEF0F8; color:var(--primary); border:1px solid var(--primary); }
+
+.two{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.caption{ font-size:8.5px; color:var(--text-3); margin-top:3px; }
+svg{ width:100%; height:auto; display:block; }
+
+.lane   { fill:#FAFBFC; stroke:var(--border-100); stroke-width:1; }
+.s-ok   { fill:#EAF6E6; stroke:var(--ok);        stroke-width:1.1; }
+.s-mid  { fill:#FDF4E6; stroke:var(--tertiary);  stroke-width:1.1; }
+.s-no   { fill:#FBE9E9; stroke:var(--err);       stroke-width:1.3; }
+.s-flat { fill:#EEF0F8; stroke:var(--primary);   stroke-width:1; }
+.note   { fill:#F1F6F6; stroke:var(--secondary); stroke-width:1; stroke-dasharray:3 2.5; }
+
+.t   { font:600 11px 'Montserrat',sans-serif;   fill:var(--text); }
+.t-s { font:400 9px 'Montserrat',sans-serif;    fill:var(--text-2); }
+.t-n { font:400 8.5px 'Montserrat',sans-serif;  fill:#3c6d70; }
+.t-p { font:600 10.5px 'Montserrat',sans-serif; fill:var(--primary); }
+.t-l { font:500 8.5px 'Montserrat',sans-serif;  fill:var(--text-2); }
+.t-h { font:600 8px 'Montserrat',sans-serif;    fill:var(--text-3); letter-spacing:.7px; }
+.m-ok{ font:700 13px 'Montserrat',sans-serif;   fill:#2F7A14; }
+.m-md{ font:700 13px 'Montserrat',sans-serif;   fill:#9A6410; }
+.m-no{ font:700 13px 'Montserrat',sans-serif;   fill:var(--err); }
+
+.ln  { stroke:#9AA1AF; stroke-width:1.3; fill:none; }
+.ln-d{ stroke:var(--secondary); stroke-width:1; fill:none; stroke-dasharray:3 3; }
+.ln-r{ stroke:var(--err); stroke-width:1.2; fill:none; stroke-dasharray:4 3; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9AA1AF"/>
+    </marker>
+    <marker id="arwr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#B30000"/>
+    </marker>
+  </defs>
+</svg>
+
+
+<!-- ═══════════════ PÁGINA 1 · resumen y diagrama ═══════════════ -->
+<section class="page">
+  <div class="head">
+    <span class="brand">DATADEC</span>
+    <span class="doc">SELECTOR DE PUNTO DE RECOGIDA · pág. 1 de 3</span>
+  </div>
+
+  <div class="eyebrow">App de Shopify · arquitectura técnica</div>
+  <h1>El carrito ya sabe pedir puntos de recogida; falta enchufarlo a un transportista real y a un backend desplegado</h1>
+  <p class="lead">Los cuatro componentes del MVP están escritos y se hablan entre sí tal y como
+    se explica en este documento, pero hoy corren con datos de demostración: no hay migración
+    de base de datos generada, el backend no está desplegado (Render sigue con URLs de
+    ejemplo) y el servicio web del transportista todavía no existe.</p>
+  <p class="meta">15 de septiembre de 2026 · lectura del repositorio (commits <code>cc51afe</code>
+    y <code>5978c98</code>) y de la configuración de Shopify Partners — no hay entorno
+    desplegado ni pruebas de extremo a extremo ejecutadas para este análisis.</p>
+
+  <svg viewBox="0 0 720 720" role="img" aria-label="Diagrama de componentes: navegador del comprador y del comerciante, plataforma Shopify, backend Remix en Render, y datos/servicios externos, con el estado de cada pieza">
+
+    <g>
+      <rect class="s-mid" x="0"   y="0" width="14" height="14" rx="3"/>
+      <text class="t-l" x="20"  y="11">hecho, sin verificar en ejecución</text>
+      <rect class="s-no"  x="220" y="0" width="14" height="14" rx="3"/>
+      <text class="t-l" x="240" y="11">bloqueado: falta algo que no depende de este código</text>
+      <rect class="s-flat" x="0" y="20" width="14" height="14" rx="3"/>
+      <text class="t-l" x="20" y="31">infraestructura de Shopify (no es código propio)</text>
+    </g>
+
+    <!-- LANE A: navegador -->
+    <rect class="lane" x="0" y="50" width="720" height="104" rx="4"/>
+    <text class="t-h" x="10" y="64">1 · NAVEGADOR — QUIÉN USA LA APP</text>
+
+    <rect class="s-mid" x="16" y="74" width="340" height="64" rx="4"/>
+    <text class="m-md" x="30" y="100">◐</text>
+    <text class="t"    x="50" y="96">Comprador — carrito de la tienda</text>
+    <text class="t-s"  x="50" y="112">Bloque Liquid+JS — vista lista y vista mapa</text>
+
+    <rect class="s-mid" x="372" y="74" width="332" height="64" rx="4"/>
+    <text class="m-md" x="386" y="100">◐</text>
+    <text class="t"    x="406" y="96">Comerciante — Admin de Shopify</text>
+    <text class="t-s"  x="406" y="112">Panel de ajustes embebido (Polaris + App Bridge)</text>
+
+    <!-- LANE B: plataforma Shopify -->
+    <rect class="lane" x="0" y="162" width="720" height="168" rx="4"/>
+    <text class="t-h" x="10" y="176">2 · PLATAFORMA SHOPIFY — infraestructura, no código de esta app</text>
+
+    <rect class="s-flat" x="16" y="186" width="340" height="52" rx="4"/>
+    <text class="t"   x="30" y="206">App Proxy — /apps/pickup-points/*</text>
+    <text class="t-s" x="30" y="222">Reenvía la petición firmada (HMAC) al backend</text>
+
+    <rect class="s-flat" x="372" y="186" width="332" height="52" rx="4"/>
+    <text class="t"   x="386" y="206">Cart AJAX API — /cart/update.js</text>
+    <text class="t-s" x="386" y="222">Guarda el punto elegido como atributo del pedido</text>
+
+    <rect class="s-flat" x="16" y="250" width="340" height="52" rx="4"/>
+    <text class="t"   x="30" y="270">Iframe embebido + App Bridge</text>
+    <text class="t-s" x="30" y="286">Sesión OAuth de la tienda dentro del Admin</text>
+
+    <rect class="s-flat" x="372" y="250" width="332" height="52" rx="4"/>
+    <text class="t"   x="386" y="270">OAuth + Webhooks</text>
+    <text class="t-s" x="386" y="286">Instalación, token de acceso, app/uninstalled</text>
+
+    <!-- LANE C: backend -->
+    <rect class="lane" x="0" y="338" width="720" height="220" rx="4"/>
+    <text class="t-h" x="10" y="352">3 · BACKEND — REMIX (NODE), DESPLEGADO EN RENDER</text>
+
+    <rect class="s-mid" x="16" y="362" width="220" height="56" rx="4"/>
+    <text class="m-md" x="30" y="388">◐</text>
+    <text class="t"    x="50" y="384">proxy.points.tsx</text>
+    <text class="t-s"  x="50" y="400">Verifica el HMAC y pide los puntos</text>
+
+    <rect class="s-mid" x="250" y="362" width="220" height="56" rx="4"/>
+    <text class="m-md" x="264" y="388">◐</text>
+    <text class="t"    x="284" y="384">app._index.tsx</text>
+    <text class="t-s"  x="284" y="400">Ajustes: URL, API key, vista inicial</text>
+
+    <rect class="s-mid" x="484" y="362" width="220" height="56" rx="4"/>
+    <text class="m-md" x="498" y="388">◐</text>
+    <text class="t"    x="518" y="384">auth.$.tsx · webhooks.*</text>
+    <text class="t-s"  x="518" y="400">OAuth catch-all y baja al desinstalar</text>
+
+    <rect class="s-mid" x="16" y="430" width="340" height="56" rx="4"/>
+    <text class="m-md" x="30" y="456">◐</text>
+    <text class="t"    x="50" y="452">services/pickupPoints.server.ts</text>
+    <text class="t-s"  x="50" y="468">Único punto de integración; normaliza la respuesta externa</text>
+
+    <rect class="s-mid" x="372" y="430" width="332" height="56" rx="4"/>
+    <text class="m-md" x="386" y="456">◐</text>
+    <text class="t"    x="406" y="452">services/geo.server.ts</text>
+    <text class="t-s"  x="406" y="468">Distancia (haversine) + geocodificador DEMO por provincia</text>
+
+    <rect class="note" x="430" y="496" width="274" height="28" rx="4"/>
+    <text class="t-s" x="440" y="508">Render (Node): falta el primer despliegue</text>
+    <text class="t-s" x="440" y="520">shopify.app.*.toml sigue con URLs de ejemplo</text>
+    <circle cx="698" cy="502" r="9" fill="#B30000"/>
+    <text x="698" y="506" text-anchor="middle" style="font:700 10px sans-serif" fill="#fff">2</text>
+
+    <!-- LANE D: datos y externos -->
+    <rect class="lane" x="0" y="566" width="720" height="140" rx="4"/>
+    <text class="t-h" x="10" y="580">4 · DATOS Y SERVICIOS EXTERNOS</text>
+
+    <rect class="s-no" x="16" y="590" width="250" height="56" rx="4"/>
+    <text class="m-no" x="30" y="616">✕</text>
+    <text class="t"    x="50" y="612">Neon Postgres — Session, ShopSettings</text>
+    <text class="t-s"  x="50" y="628">Falta generar la migración inicial</text>
+    <circle cx="260" cy="596" r="9" fill="#B30000"/>
+    <text x="260" y="600" text-anchor="middle" style="font:700 10px sans-serif" fill="#fff">3</text>
+
+    <rect class="s-mid" x="282" y="590" width="200" height="56" rx="4"/>
+    <text class="m-md" x="296" y="616">◐</text>
+    <text class="t"    x="316" y="612">pickupPoints.mock.ts</text>
+    <text class="t-s"  x="316" y="628">10 puntos fijos en España</text>
+
+    <rect class="s-no" x="498" y="590" width="206" height="56" rx="4"/>
+    <text class="m-no" x="512" y="616">✕</text>
+    <text class="t"    x="532" y="612">Servicio de la agencia</text>
+    <text class="t-s"  x="532" y="628">No existe: sin URL configurada</text>
+    <circle cx="698" cy="596" r="9" fill="#B30000"/>
+    <text x="698" y="600" text-anchor="middle" style="font:700 10px sans-serif" fill="#fff">1</text>
+
+    <!-- flechas -->
+    <path class="ln" d="M186,138 L186,186" marker-end="url(#arw)"/>
+    <path class="ln-d" d="M300,138 L300,160 L538,160 L538,186" marker-end="url(#arw)"/>
+    <text class="t-n" x="392" y="153">no pasa por el backend</text>
+
+    <path class="ln" d="M538,138 L538,168 L364,168 L364,244 L186,244 L186,250" marker-end="url(#arw)"/>
+
+    <path class="ln" d="M186,238 L186,240 L366,240 L366,316 L126,316 L126,362" marker-end="url(#arw)"/>
+    <path class="ln" d="M186,302 L186,322 L360,322 L360,362" marker-end="url(#arw)"/>
+    <path class="ln" d="M538,302 L538,328 L594,328 L594,362" marker-end="url(#arw)"/>
+
+    <path class="ln" d="M126,418 L126,424 L186,424 L186,430" marker-end="url(#arw)"/>
+
+    <path class="ln" d="M100,486 L100,516 L120,516 L120,590" marker-end="url(#arw)"/>
+    <path class="ln" d="M186,486 L186,548 L382,548 L382,590" marker-end="url(#arw)"/>
+    <path class="ln-r" d="M270,486 L270,558 L601,558 L601,590" marker-end="url(#arwr)"/>
+    <text class="t-n" x="410" y="553">solo si hay URL configurada</text>
+
+    <path class="ln" d="M360,418 L360,536 L170,536 L170,590" marker-end="url(#arw)"/>
+
+  </svg>
+
+  <p class="caption">Los números en rojo remiten a la ficha de cada bloqueo en la página 3.
+    Las sesiones OAuth de <code>auth.$.tsx</code>/<code>webhooks.*</code> también viven en
+    Neon (tabla <code>Session</code>); no se ha dibujado la flecha para no cruzar la nota de
+    Render.</p>
+</section>
+
+
+<!-- ═══════════════ PÁGINA 2 · detalle técnico ═══════════════ -->
+<section class="page">
+  <div class="head">
+    <span class="brand">DATADEC</span>
+    <span class="doc">SELECTOR DE PUNTO DE RECOGIDA · pág. 2 de 3</span>
+  </div>
+
+  <h2>Cómo viaja un punto de recogida hasta el carrito</h2>
+  <p class="muted">Ocho pasos, siempre a través del mismo camino — el bloque de carrito nunca
+    llama directamente al backend.</p>
+  <table>
+    <thead><tr><th style="width:22px">#</th><th style="width:30%">Quién actúa</th><th>Qué hace</th></tr></thead>
+    <tbody>
+      <tr><td class="k">1</td><td>Bloque de carrito (JS)</td><td>Pide <code>GET /apps/pickup-points/points?postalCode=…</code> al dominio de la propia tienda — mismo origen, sin CORS.</td></tr>
+      <tr><td class="k">2</td><td>App Proxy de Shopify</td><td>Reenvía la petición, firmada con HMAC, a <code>&lt;backend&gt;/proxy/points</code>.</td></tr>
+      <tr><td class="k">3</td><td><code>proxy.points.tsx</code></td><td>Verifica la firma con <code>authenticate.public.appProxy</code> y extrae <code>shop</code>, <code>postalCode</code>, <code>city</code>.</td></tr>
+      <tr><td class="k">4</td><td><code>pickupPoints.server.ts</code></td><td>Busca en Postgres si esa tienda tiene configurada una URL de servicio real (<code>ShopSettings</code>).</td></tr>
+      <tr><td class="k">5</td><td>Servicio externo o datos DEMO</td><td>Si hay URL, la llama y normaliza la respuesta; si no — o si falla —, usa <code>pickupPoints.mock.ts</code> (10 puntos fijos).</td></tr>
+      <tr><td class="k">6</td><td><code>geo.server.ts</code></td><td>Geolocaliza el CP/ciudad del cliente (centroide DEMO de provincia) y ordena los puntos por distancia.</td></tr>
+      <tr><td class="k">7</td><td>Bloque de carrito (JS)</td><td>Pinta la lista o el mapa (Leaflet + OpenStreetMap) con el JSON recibido.</td></tr>
+      <tr><td class="k">8</td><td>Bloque de carrito (JS)</td><td>Al elegir un punto, llama a <code>/cart/update.js</code> (API propia de Shopify) y lo guarda como atributo del pedido — sin pasar por el backend.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Componentes</h2>
+  <table>
+    <thead><tr><th style="width:24%">Componente</th><th style="width:14%">Dónde vive</th><th>Responsabilidad</th><th style="width:15%">Estado</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Theme App Extension</td><td>Tienda (tema)</td><td>Bloque de carrito: <code>pickup-point-picker.liquid/.js/.css</code>. Modal, vista lista, vista mapa.</td><td><span class="tag tag--wait">sin probar</span></td></tr>
+      <tr><td class="k">App Proxy</td><td>Shopify</td><td>Reenvía <code>/apps/pickup-points/*</code> al backend con firma HMAC. Configurado en el <code>.toml</code>.</td><td><span class="tag tag--flat">infra Shopify</span></td></tr>
+      <tr><td class="k">Admin embebido</td><td>Shopify (iframe)</td><td><code>app.tsx</code> + <code>app._index.tsx</code>: formulario de ajustes con Polaris.</td><td><span class="tag tag--wait">sin probar</span></td></tr>
+      <tr><td class="k">Backend Remix</td><td>Render (Node)</td><td>OAuth, proxy de puntos, ajustes, webhook de desinstalación.</td><td><span class="tag tag--wait">sin desplegar</span></td></tr>
+      <tr><td class="k">Base de datos</td><td>Neon (Postgres)</td><td>Sesiones OAuth (<code>Session</code>) y ajustes por tienda (<code>ShopSettings</code>).</td><td><span class="tag tag--no">migración pendiente</span></td></tr>
+      <tr><td class="k">Servicio de puntos</td><td>Externo (agencia)</td><td>Contrato aún no definido; hoy no existe URL configurada.</td><td><span class="tag tag--no">no existe</span></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Modelo de datos (Prisma, en Neon)</h2>
+  <div class="two">
+    <div class="card card--flat">
+      <h3>Session</h3>
+      <p class="muted" style="margin-bottom:4px">Requerida por <code>@shopify/shopify-app-session-storage-prisma</code> para persistir el token OAuth de cada tienda instalada (online y offline).</p>
+      <p style="margin-bottom:0"><code>id, shop, accessToken, scope, isOnline, expires…</code></p>
+    </div>
+    <div class="card card--flat">
+      <h3>ShopSettings</h3>
+      <p class="muted" style="margin-bottom:4px">Configuración propia de la app, una fila por tienda instalada.</p>
+      <p style="margin-bottom:0"><code>shop, pickupApiUrl, pickupApiKey, defaultView</code> ("list" | "map")</p>
+    </div>
+  </div>
+
+  <h2>Configuración y despliegue</h2>
+  <table>
+    <thead><tr><th style="width:26%">Pieza</th><th>Detalle</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Config de la app</td><td><code>shopify.app.test-plugin.toml</code> — único fichero de config activo (organización Datadec S.A. en Partners). <code>access_scopes</code> vacío a propósito: el MVP no lee ni escribe datos de la tienda.</td></tr>
+      <tr><td class="k">Distribución</td><td><code>AppDistribution.AppStore</code> en <code>shopify.server.ts</code>: pensada para que la instalen terceros, por enlace personalizado o App Store.</td></tr>
+      <tr><td class="k">Hosting backend</td><td>Blueprint <code>render.yaml</code>: un servicio Node, plan free, <code>rootDir: web</code>. El build ejecuta <code>prisma generate && prisma migrate deploy && npm run build</code>.</td></tr>
+      <tr><td class="k">Base de datos</td><td>Neon Postgres: <code>DATABASE_URL</code> (pooler, la usa la app en marcha) y <code>DIRECT_DATABASE_URL</code> (conexión directa, la usa <code>prisma migrate</code>).</td></tr>
+      <tr><td class="k">Variables de entorno</td><td><code>SHOPIFY_API_KEY/SECRET</code>, <code>SCOPES</code>, <code>SHOPIFY_APP_URL</code>, <code>DATABASE_URL</code>, <code>DIRECT_DATABASE_URL</code>, y opcionalmente <code>PICKUP_POINTS_API_URL/API_KEY</code> — ninguna la genera Render, hay que rellenarlas a mano.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+
+<!-- ═══════════════ PÁGINA 3 · bloqueos y siguiente paso ═══════════════ -->
+<section class="page">
+  <div class="head">
+    <span class="brand">DATADEC</span>
+    <span class="doc">SELECTOR DE PUNTO DE RECOGIDA · pág. 3 de 3</span>
+  </div>
+
+  <h2>Los tres bloqueos, y qué hace falta para cada uno</h2>
+  <p class="muted">Los tres son independientes entre sí: se pueden resolver en cualquier orden.</p>
+  <table>
+    <thead>
+      <tr><th style="width:22px">#</th><th style="width:24%">Qué frena</th><th>Qué hace falta exactamente</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="k">1</td>
+        <td class="k">Servicio web de la agencia<br><span class="tag tag--no">bloqueado</span></td>
+        <td>El contrato real (endpoint, campos, autenticación) todavía no existe. Mientras tanto <code>pickupPoints.server.ts</code> sirve el listado fijo de <code>pickupPoints.mock.ts</code>. En cuanto la agencia dé la URL, solo hay que ajustar <code>normalizeExternalResponse</code> — el resto de la app no cambia.</td>
+      </tr>
+      <tr>
+        <td class="k">2</td>
+        <td class="k">Despliegue en Render<br><span class="tag tag--no">bloqueado</span></td>
+        <td>Faltan la cuenta de Neon y el blueprint de Render por ejecutar, y rellenar a mano <code>SHOPIFY_API_KEY/SECRET</code>, <code>DATABASE_URL</code>, <code>SHOPIFY_APP_URL</code>. Hasta entonces, <code>shopify.app.test-plugin.toml</code> sigue con tres <code>REPLACE-WITH-RENDER-URL</code> (application_url, redirect_urls, app_proxy.url) que hay que sustituir y publicar con <code>npm run deploy</code>.</td>
+      </tr>
+      <tr>
+        <td class="k">3</td>
+        <td class="k">Migración inicial de Prisma<br><span class="tag tag--no">bloqueado</span></td>
+        <td><code>web/prisma/migrations</code> solo tiene el <code>migration_lock.toml</code>: nunca se ha ejecutado <code>npx prisma migrate dev --name init</code>. Sin esa migración, ni el entorno local arranca contra una base de datos real (usa SQLite de <code>.env</code> como respaldo) ni el <code>buildCommand</code> de Render tiene nada que desplegar con <code>migrate deploy</code>.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="card card--key">
+    <h2>El dato que conviene no pasar por alto</h2>
+    <p style="margin-bottom:0">El proyecto sí ha llegado a ejecutarse una vez: <code>.shopify/project.json</code> y el
+      <code>dev-bundle</code> generado muestran que <code>shopify app dev</code> se corrió y quedó
+      vinculado a la tienda de desarrollo <code>datadec-dev-pickup.myshopify.com</code>. Eso es lo único
+      verificado por una herramienta hasta la fecha; no hay evidencia de que el bloque se haya
+      abierto en un carrito real ni de que exista ningún test automático (no hay carpeta de
+      tests ni integración continua en el repositorio).</p>
+  </div>
+
+  <div class="two">
+    <div class="card card--flat">
+      <h3>Lo que ya está escrito y encaja con el diseño</h3>
+      <ul>
+        <li>Los cuatro componentes (extensión, proxy, admin, servicios) y su forma de hablarse.</li>
+        <li>El contrato interno <code>PickupPoint</code> y su normalización desde un servicio externo.</li>
+        <li>El fallback a datos DEMO ante fallo o ausencia del servicio real.</li>
+        <li>El cálculo de distancia y orden (<code>haversineKm</code> + geocodificador DEMO).</li>
+        <li>El guardado del punto elegido como atributo del pedido, visible en Admin y email.</li>
+      </ul>
+    </div>
+    <div class="card card--flat">
+      <h3>Qué falta para afirmar esto con más seguridad</h3>
+      <ul>
+        <li>Ejecutar <code>npx prisma migrate dev</code> y levantar la app contra una base real.</li>
+        <li>Abrir el bloque en el carrito de la tienda de desarrollo ya vinculada y probar lista, mapa y guardado.</li>
+        <li>Un primer despliegue en Render con URLs definitivas, para probar OAuth de extremo a extremo.</li>
+        <li>El contrato del servicio web de la agencia de transporte, para dejar de depender del mock.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
