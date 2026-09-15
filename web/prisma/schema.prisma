@@ -3,8 +3,11 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  // Conexión agrupada (pooler) de Neon: la usa la app en marcha.
+  url       = env("DATABASE_URL")
+  // Conexión directa (sin pooler): la usa `prisma migrate` al desplegar.
+  directUrl = env("DIRECT_DATABASE_URL")
 }
 
 // Requerido por @shopify/shopify-app-session-storage-prisma para persistir

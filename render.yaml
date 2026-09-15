@@ -24,6 +24,8 @@ services:
         sync: false
       - key: DATABASE_URL
         sync: false
+      - key: DIRECT_DATABASE_URL
+        sync: false
       - key: PICKUP_POINTS_API_URL
         sync: false
       - key: PICKUP_POINTS_API_KEY
