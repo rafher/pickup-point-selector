@@ -10,7 +10,7 @@
 # definitiva y ejecutar `shopify app deploy` una vez para publicarla.
 
 client_id = "0249018a05a22cbdb144d9ffc8542599"
-application_url = "https://REPLACE-WITH-RENDER-URL.onrender.com"
+application_url = "https://pickup-point-selector.onrender.com"
 embedded = true
 name = "Selector de punto de recogida"
 
@@ -22,9 +22,9 @@ scopes = ""
 
 [auth]
 redirect_urls = [
-  "https://REPLACE-WITH-RENDER-URL.onrender.com/auth/callback",
-  "https://REPLACE-WITH-RENDER-URL.onrender.com/auth/shopify/callback",
-  "https://REPLACE-WITH-RENDER-URL.onrender.com/api/auth/callback"
+  "https://pickup-point-selector.onrender.com/auth/callback",
+  "https://pickup-point-selector.onrender.com/auth/shopify/callback",
+  "https://pickup-point-selector.onrender.com/api/auth/callback"
 ]
 
 [webhooks]
@@ -39,7 +39,7 @@ api_version = "2026-10"
 # se reenvíen (mismo origen para el navegador, sin problemas de CORS) a
 #   <url>/*
 [app_proxy]
-url = "https://REPLACE-WITH-RENDER-URL.onrender.com/proxy"
+url = "https://pickup-point-selector.onrender.com/proxy"
 subpath = "pickup-points"
 prefix = "apps"
 
