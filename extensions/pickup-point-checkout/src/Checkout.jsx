@@ -199,27 +199,17 @@ function Extension() {
       )}
 
       {!loading && !error && points.length > 0 && view === "list" && (
-        <s-choice-list
-          name="pickup-point"
-          values={selectedId ? [selectedId] : []}
-          onChange={(event) => {
-            const next = event.target.value ?? event.target.values?.[0];
-            if (next) setSelectedId(next);
-          }}
-        >
-          {points.map((p) => (
-            <s-choice key={p.id} value={p.id}>
-              <s-stack direction="inline" gap="base">
-                <s-box
-                  background="strong"
-                  borderRadius="base"
-                  inlineSize="2.75rem"
-                  blockSize="2.75rem"
-                >
-                  <s-text weight="bold" alignment="center">
-                    {carrierInitials(p.carrier)}
-                  </s-text>
-                </s-box>
+        <s-scroll-box blockSize="18rem">
+          <s-choice-list
+            name="pickup-point"
+            values={selectedId ? [selectedId] : []}
+            onChange={(event) => {
+              const next = event.target.value ?? event.target.values?.[0];
+              if (next) setSelectedId(next);
+            }}
+          >
+            {points.map((p) => (
+              <s-choice key={p.id} value={p.id}>
                 <s-stack gap="tight">
                   <s-stack direction="inline" gap="tight">
                     <s-text weight="bold">{p.name}</s-text>
@@ -227,13 +217,15 @@ function Extension() {
                       <s-badge tone="info">{formatDistance(p.distanceKm)}</s-badge>
                     )}
                   </s-stack>
-                  <s-text tone="subdued">{formatAddress(p)}</s-text>
-                  {p.carrier && <s-badge>{p.carrier}</s-badge>}
+                  <s-text tone="subdued">
+                    {formatAddress(p)}
+                    {p.carrier ? ` · ${p.carrier}` : ""}
+                  </s-text>
                 </s-stack>
-              </s-stack>
-            </s-choice>
-          ))}
-        </s-choice-list>
+              </s-choice>
+            ))}
+          </s-choice-list>
+        </s-scroll-box>
       )}
 
       {!loading && !error && points.length > 0 && view === "map" && googleMapsApiKey && (
@@ -299,12 +291,6 @@ function isPickupDeliveryOptionSelected() {
     // completar), no rompemos la extensión: simplemente no se muestra.
     return false;
   }
-}
-
-function carrierInitials(carrier) {
-  if (!carrier) return "PR";
-  const words = carrier.trim().split(/\s+/).slice(0, 2);
-  return words.map((w) => w[0]?.toUpperCase() || "").join("") || "PR";
 }
 
 function formatAddress(point) {
