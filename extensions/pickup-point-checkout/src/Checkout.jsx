@@ -53,7 +53,7 @@ function Extension() {
   const t = STRINGS[lang] || STRINGS.es;
 
   const [view, setView] = useState("list");
-  const [query, setQuery] = useState(initialQuery());
+  const [typedQuery, setTypedQuery] = useState("");
   const [points, setPoints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -65,26 +65,18 @@ function Extension() {
   const canUpdateAttributes =
     shopify.instructions?.value?.attributes?.canUpdateAttributes !== false;
 
-  // Se recalcula en cada render (isPickupDeliveryOptionSelected lee la
-  // signal shopify.deliveryGroups, así que esto reacciona solo en cuanto
-  // el cliente cambia de método de envío).
+  // Se recalculan en cada render — deliveryGroups y shippingAddress son
+  // signals de Shopify, así que leer su .value aquí hace que el
+  // componente se vuelva a pintar solo en cuanto cambian (método de
+  // envío elegido, dirección rellenada/editada...).
   const pickupSelected = isPickupDeliveryOptionSelected();
-  const shippingZip = shopify.shippingAddress?.value?.zip;
+  const shippingZip = shopify.shippingAddress?.value?.zip || "";
 
-  useEffect(() => {
-    fetchPoints(query);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Al seleccionar "Puntos" (o si el cliente termina de rellenar/editar su
-  // código postal mientras ya está seleccionado), se usa ese código postal
-  // como búsqueda por defecto — pero solo si el buscador sigue vacío, para
-  // no pisar lo que el cliente haya escrito a mano.
-  useEffect(() => {
-    if (!pickupSelected || !shippingZip) return;
-    setQuery((current) => (current.trim() ? current : shippingZip));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pickupSelected, shippingZip]);
+  // El buscador muestra lo que el cliente haya escrito a mano; si no ha
+  // escrito nada, cae al código postal del formulario de envío (una vez
+  // lo tenga relleno). Así no depende de en qué momento exacto se monta
+  // la extensión ni de una sincronización por efecto aparte.
+  const query = typedQuery.trim() ? typedQuery : shippingZip;
 
   useEffect(() => {
     const id = setTimeout(() => fetchPoints(query), 400);
@@ -96,15 +88,6 @@ function Extension() {
     () => points.find((p) => p.id === selectedId) || null,
     [points, selectedId],
   );
-
-  function initialQuery() {
-    try {
-      const address = shopify.shippingAddress?.value;
-      return address?.zip || address?.city || "";
-    } catch {
-      return "";
-    }
-  }
 
   function existingSelectionId() {
     try {
@@ -191,7 +174,7 @@ function Extension() {
       <s-text-field
         label={t.searchLabel}
         value={query}
-        onInput={(event) => setQuery(event.target.value)}
+        onInput={(event) => setTypedQuery(event.target.value)}
       ></s-text-field>
 
       <s-stack direction="inline" gap="tight">
