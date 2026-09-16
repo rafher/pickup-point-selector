@@ -1,0 +1,27 @@
+# Learn more about configuring your checkout UI extension:
+# https://shopify.dev/docs/api/checkout-ui-extensions/latest/configuration
+
+# The version of APIs your extension will receive. Learn more:
+# https://shopify.dev/docs/api/usage/versioning
+api_version = "2026-07"
+
+[[extensions]]
+name = "Punto de recogida (checkout)"
+handle = "pickup-point-checkout"
+type = "ui_extension"
+uid = "e6383972-efba-2272-bb11-df8511f9f1099b8c202e"
+
+# Fase 1: bloque visible que el comercio coloca a mano en el checkout
+# (editor de checkout → añadir bloque a "Entrega" o donde prefiera). La
+# Fase 2 lo condicionará a que el cliente elija la opción de envío
+# "Recogida en punto de conveniencia" (requiere una Delivery Customization
+# Function, ver extensions/pickup-point-delivery-option/).
+[[extensions.targeting]]
+module = "./src/Checkout.jsx"
+target = "purchase.checkout.block.render"
+
+[extensions.capabilities]
+# La extensión llama directamente (por red) al backend de la app para
+# pedir los puntos de recogida y la API key de Google Maps — no pasa por
+# el App Proxy del storefront como el bloque de carrito.
+network_access = true

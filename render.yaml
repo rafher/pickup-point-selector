@@ -30,3 +30,5 @@ services:
         sync: false
       - key: PICKUP_POINTS_API_KEY
         sync: false
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
