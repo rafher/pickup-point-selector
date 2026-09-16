@@ -202,6 +202,7 @@ function Extension() {
         <s-scroll-box maxBlockSize="18rem" accessibilityLabel={t.heading}>
           <s-choice-list
             name="pickup-point"
+            variant="block"
             values={selectedId ? [selectedId] : []}
             onChange={(event) => {
               const next = event.target.value ?? event.target.values?.[0];
