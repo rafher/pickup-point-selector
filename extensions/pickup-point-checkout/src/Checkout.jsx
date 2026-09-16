@@ -209,12 +209,27 @@ function Extension() {
         >
           {points.map((p) => (
             <s-choice key={p.id} value={p.id}>
-              <s-stack gap="none">
-                <s-text weight="bold">{p.name}</s-text>
-                <s-text tone="subdued">
-                  {formatAddress(p)}
-                  {p.distanceKm != null ? ` · ${formatDistance(p.distanceKm)}` : ""}
-                </s-text>
+              <s-stack direction="inline" gap="base">
+                <s-box
+                  background="strong"
+                  borderRadius="base"
+                  inlineSize="2.75rem"
+                  blockSize="2.75rem"
+                >
+                  <s-text weight="bold" alignment="center">
+                    {carrierInitials(p.carrier)}
+                  </s-text>
+                </s-box>
+                <s-stack gap="tight">
+                  <s-stack direction="inline" gap="tight">
+                    <s-text weight="bold">{p.name}</s-text>
+                    {p.distanceKm != null && (
+                      <s-badge tone="info">{formatDistance(p.distanceKm)}</s-badge>
+                    )}
+                  </s-stack>
+                  <s-text tone="subdued">{formatAddress(p)}</s-text>
+                  {p.carrier && <s-badge>{p.carrier}</s-badge>}
+                </s-stack>
               </s-stack>
             </s-choice>
           ))}
@@ -284,6 +299,12 @@ function isPickupDeliveryOptionSelected() {
     // completar), no rompemos la extensión: simplemente no se muestra.
     return false;
   }
+}
+
+function carrierInitials(carrier) {
+  if (!carrier) return "PR";
+  const words = carrier.trim().split(/\s+/).slice(0, 2);
+  return words.map((w) => w[0]?.toUpperCase() || "").join("") || "PR";
 }
 
 function formatAddress(point) {
