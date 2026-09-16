@@ -199,7 +199,7 @@ function Extension() {
       )}
 
       {!loading && !error && points.length > 0 && view === "list" && (
-        <s-scroll-box blockSize="18rem">
+        <s-scroll-box maxBlockSize="18rem" accessibilityLabel={t.heading}>
           <s-choice-list
             name="pickup-point"
             values={selectedId ? [selectedId] : []}
