@@ -52,8 +52,10 @@ function Extension() {
   const lang = (shopify.locale?.value || "es").slice(0, 2).toLowerCase();
   const t = STRINGS[lang] || STRINGS.es;
 
-  const [view, setView] = useState("list");
-  const [typedQuery, setTypedQuery] = useState("");
+  // Mapa por delante, ya que el sitio natural para "dónde recojo" es
+  // visual — la lista sigue disponible en su pestaña.
+  const [view, setView] = useState("map");
+  const [query, setQuery] = useState("");
   const [points, setPoints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -65,18 +67,16 @@ function Extension() {
   const canUpdateAttributes =
     shopify.instructions?.value?.attributes?.canUpdateAttributes !== false;
 
-  // Se recalculan en cada render — deliveryGroups y shippingAddress son
-  // signals de Shopify, así que leer su .value aquí hace que el
-  // componente se vuelva a pintar solo en cuanto cambian (método de
-  // envío elegido, dirección rellenada/editada...).
+  // Se recalcula en cada render — deliveryGroups es una signal de
+  // Shopify, así que leer su .value aquí hace que el componente se
+  // vuelva a pintar solo en cuanto el cliente cambia de método de envío.
+  //
+  // NOTA: el autorrelleno del buscador con shopify.shippingAddress se
+  // quitó — ese dato exige acceso de Nivel 2 a datos protegidos del
+  // cliente, que hay que solicitar y esperar a que Shopify lo apruebe
+  // (no es un permiso que se conceda al instante como network_access).
+  // Mientras no se pida esa aprobación, el buscador es manual.
   const pickupSelected = isPickupDeliveryOptionSelected();
-  const shippingZip = shopify.shippingAddress?.value?.zip || "";
-
-  // El buscador muestra lo que el cliente haya escrito a mano; si no ha
-  // escrito nada, cae al código postal del formulario de envío (una vez
-  // lo tenga relleno). Así no depende de en qué momento exacto se monta
-  // la extensión ni de una sincronización por efecto aparte.
-  const query = typedQuery.trim() ? typedQuery : shippingZip;
 
   useEffect(() => {
     const id = setTimeout(() => fetchPoints(query), 400);
@@ -174,7 +174,7 @@ function Extension() {
       <s-text-field
         label={t.searchLabel}
         value={query}
-        onInput={(event) => setTypedQuery(event.target.value)}
+        onInput={(event) => setQuery(event.target.value)}
       ></s-text-field>
 
       <s-stack direction="inline" gap="tight">
