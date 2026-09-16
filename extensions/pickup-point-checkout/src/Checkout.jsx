@@ -65,10 +65,26 @@ function Extension() {
   const canUpdateAttributes =
     shopify.instructions?.value?.attributes?.canUpdateAttributes !== false;
 
+  // Se recalcula en cada render (isPickupDeliveryOptionSelected lee la
+  // signal shopify.deliveryGroups, así que esto reacciona solo en cuanto
+  // el cliente cambia de método de envío).
+  const pickupSelected = isPickupDeliveryOptionSelected();
+  const shippingZip = shopify.shippingAddress?.value?.zip;
+
   useEffect(() => {
     fetchPoints(query);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Al seleccionar "Puntos" (o si el cliente termina de rellenar/editar su
+  // código postal mientras ya está seleccionado), se usa ese código postal
+  // como búsqueda por defecto — pero solo si el buscador sigue vacío, para
+  // no pisar lo que el cliente haya escrito a mano.
+  useEffect(() => {
+    if (!pickupSelected || !shippingZip) return;
+    setQuery((current) => (current.trim() ? current : shippingZip));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pickupSelected, shippingZip]);
 
   useEffect(() => {
     const id = setTimeout(() => fetchPoints(query), 400);
@@ -162,11 +178,9 @@ function Extension() {
     return null;
   }
 
-  if (!isPickupDeliveryOptionSelected()) {
+  if (!pickupSelected) {
     // Solo se muestra cuando el cliente ha elegido la tarifa de envío de
-    // recogida en punto — shopify.deliveryGroups es una signal, así que
-    // leerla aquí hace que el componente se vuelva a pintar solo en
-    // cuanto el cliente cambia de método de envío.
+    // recogida en punto.
     return null;
   }
 
