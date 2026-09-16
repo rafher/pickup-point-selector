@@ -7,6 +7,14 @@ import { useEffect, useMemo, useState } from "preact/hooks";
 // directamente por red (capability network_access, ver shopify.extension.toml).
 const BACKEND_URL = "https://pickup-point-selector.onrender.com";
 
+// Título exacto (sin distinguir mayúsculas) de la tarifa de envío que
+// activa el selector — hoy es una tarifa de envío normal dada de alta a
+// mano en Configuración → Envío y entrega. El día que se sustituya por una
+// Delivery Customization Function (Fase 2 "de verdad"), esto deja de
+// hacer falta: la Function podría generar la opción con un handle fijo
+// y comparar por handle en vez de por título.
+const PICKUP_DELIVERY_OPTION_TITLE = "puntos";
+
 const STRINGS = {
   es: {
     heading: "Punto de recogida",
@@ -154,6 +162,14 @@ function Extension() {
     return null;
   }
 
+  if (!isPickupDeliveryOptionSelected()) {
+    // Solo se muestra cuando el cliente ha elegido la tarifa de envío de
+    // recogida en punto — shopify.deliveryGroups es una signal, así que
+    // leerla aquí hace que el componente se vuelva a pintar solo en
+    // cuanto el cliente cambia de método de envío.
+    return null;
+  }
+
   return (
     <s-stack gap="base">
       <s-heading>{t.heading}</s-heading>
@@ -255,6 +271,22 @@ function Extension() {
       </s-button>
     </s-stack>
   );
+}
+
+function isPickupDeliveryOptionSelected() {
+  try {
+    const groups = shopify.deliveryGroups?.value || [];
+    return groups.some((group) => {
+      const selectedHandle = group.selectedDeliveryOption?.handle;
+      if (!selectedHandle) return false;
+      const option = group.deliveryOptions?.find((o) => o.handle === selectedHandle);
+      return option?.title?.trim().toLowerCase() === PICKUP_DELIVERY_OPTION_TITLE;
+    });
+  } catch {
+    // Si la API cambia de forma o aún no hay datos (dirección sin
+    // completar), no rompemos la extensión: simplemente no se muestra.
+    return false;
+  }
 }
 
 function formatAddress(point) {
