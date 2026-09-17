@@ -277,6 +277,17 @@
     font-size: 0.78rem;
     color: var(--ink-muted);
   }
+
+  /* En pantalla, la tabla de opciones se desplaza horizontalmente si no
+     cabe; en impresión/PDF no hay scroll, así que se fuerza a encajar en
+     el ancho de la página en vez de recortarse por el lado derecho. */
+  @media print {
+    .table-wrap { overflow-x: visible; }
+    table { min-width: 0; table-layout: fixed; font-size: 0.74rem; }
+    th, td { padding: 8px 8px; overflow-wrap: break-word; }
+    td:first-child, th:first-child { white-space: normal; }
+    .contract__card table { font-size: 0.72rem; }
+  }
 </style>
 
 <div class="sheet">
