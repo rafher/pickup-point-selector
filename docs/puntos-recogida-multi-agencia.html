@@ -1,0 +1,464 @@
+<title>Puntos de Recogida Multi-Agencia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f2f4f1;
+    --surface: #ffffff;
+    --surface-2: #eaeee7;
+    --ink: #1b2027;
+    --ink-muted: #5c6570;
+    --border: #dbe0d8;
+    --accent: #24406b;
+    --accent-soft: #e2e8f1;
+    --flag: #935a12;
+    --flag-soft: #f5ead9;
+    --good: #1f7a4d;
+    --good-soft: #dff0e6;
+    --shadow: 0 1px 2px rgba(20, 24, 20, 0.05), 0 6px 20px rgba(20, 24, 20, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14181b;
+      --surface: #1b2126;
+      --surface-2: #212930;
+      --ink: #eef1ee;
+      --ink-muted: #9aa3ab;
+      --border: #2b333a;
+      --accent: #7ea6dd;
+      --accent-soft: #223349;
+      --flag: #e0a24a;
+      --flag-soft: #3a2c15;
+      --good: #5fce9a;
+      --good-soft: #163526;
+      --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 10px 28px rgba(0,0,0,0.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14181b;
+    --surface: #1b2126;
+    --surface-2: #212930;
+    --ink: #eef1ee;
+    --ink-muted: #9aa3ab;
+    --border: #2b333a;
+    --accent: #7ea6dd;
+    --accent-soft: #223349;
+    --flag: #e0a24a;
+    --flag-soft: #3a2c15;
+    --good: #5fce9a;
+    --good-soft: #163526;
+    --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 10px 28px rgba(0,0,0,0.4);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 1.02rem;
+    line-height: 1.65;
+    padding: 0 20px;
+    padding-block: 40px 72px;
+  }
+
+  .sheet {
+    max-width: 760px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+  }
+
+  h1, h2, h3, .label, .nav a, button, .pill {
+    font-family: "Libre Franklin", system-ui, sans-serif;
+  }
+  h1, h2, h3 { text-wrap: balance; }
+
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+
+  /* ---------- Header ---------- */
+  header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 22px;
+  }
+  .eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  h1 {
+    font-size: clamp(1.7rem, 4vw, 2.35rem);
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .dek {
+    font-size: 1.05rem;
+    color: var(--ink-muted);
+    max-width: 62ch;
+    margin: 0;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    font-family: "Libre Franklin", sans-serif;
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+    margin-top: 4px;
+  }
+  .meta strong { color: var(--ink); font-weight: 600; }
+
+  /* ---------- TL;DR ---------- */
+  .tldr {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 18px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .tldr .label {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .tldr p { margin: 0; font-size: 1rem; }
+
+  /* ---------- Nav ---------- */
+  nav.toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 4px;
+    font-family: "Libre Franklin", sans-serif;
+    font-size: 0.82rem;
+  }
+  nav.toc a {
+    color: var(--ink-muted);
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+  }
+  nav.toc a:hover, nav.toc a:focus-visible { color: var(--accent); border-color: var(--accent); outline: none; }
+
+  /* ---------- Sections ---------- */
+  section { display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 16px; }
+  h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0;
+    padding-top: 6px;
+    border-top: 1px solid var(--border);
+  }
+  h3 { font-size: 1.02rem; font-weight: 600; margin: 6px 0 -4px; color: var(--ink); }
+  p { margin: 0; max-width: 68ch; }
+  ul, ol { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 8px; max-width: 68ch; }
+  li::marker { color: var(--ink-muted); }
+  strong { font-weight: 600; }
+
+  /* ---------- Diagram ---------- */
+  .flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    flex-wrap: wrap;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+  }
+  .flow__step {
+    flex: 1 1 190px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 14px;
+  }
+  .flow__step .tag {
+    font-family: "Libre Franklin", sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .flow__step h3 { margin: 0; font-size: 0.95rem; }
+  .flow__step p { font-size: 0.85rem; color: var(--ink-muted); }
+  .flow__arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-muted);
+    font-size: 1.3rem;
+    padding: 0 4px;
+    flex: 0 0 auto;
+  }
+  @media (max-width: 640px) {
+    .flow { flex-direction: column; }
+    .flow__arrow { transform: rotate(90deg); padding: 2px 0; }
+  }
+
+  /* ---------- Options table ---------- */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); }
+  table { border-collapse: collapse; width: 100%; min-width: 620px; font-family: "Libre Franklin", sans-serif; font-size: 0.86rem; }
+  th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  thead th { background: var(--surface-2); font-weight: 700; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-muted); }
+  tbody tr:last-child td { border-bottom: none; }
+  td:first-child, th:first-child { font-weight: 600; white-space: nowrap; }
+  .rec-row td { background: var(--good-soft); }
+  .rec-row td:first-child::after {
+    content: "Recomendada";
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--good);
+    background: var(--surface);
+    border: 1px solid var(--good);
+    border-radius: 999px;
+    padding: 2px 8px;
+  }
+
+  /* ---------- Data contract ---------- */
+  .contract { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  @media (min-width: 640px) { .contract { grid-template-columns: 1fr 1fr; } }
+  .contract__card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+  }
+  .contract__card h3 { margin-top: 0; }
+  .contract__card table { min-width: 0; font-size: 0.82rem; }
+  .contract__card th, .contract__card td { padding: 8px 10px; }
+
+  /* ---------- Open decisions ---------- */
+  .decision {
+    display: flex;
+    gap: 12px;
+    background: var(--flag-soft);
+    border: 1px solid var(--flag);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .decision__mark {
+    font-family: "Libre Franklin", sans-serif;
+    font-weight: 800;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--flag);
+    flex: 0 0 auto;
+    padding-top: 2px;
+  }
+  .decision p { font-size: 0.94rem; }
+  .decision p + p { margin-top: 6px; color: var(--ink-muted); font-size: 0.86rem; }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+    font-family: "Libre Franklin", sans-serif;
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+  }
+</style>
+
+<div class="sheet">
+
+  <header>
+    <span class="eyebrow">Documento de decisión &middot; Datadec</span>
+    <h1>Puntos de Recogida Multi-Agencia</h1>
+    <p class="dek">Cómo resolver qué agencias de transporte y qué puntos de recogida mostrar al comprador, cuando cada tienda puede trabajar con varias agencias distintas según el mercado y el destino del pedido.</p>
+    <div class="meta">
+      <span><strong>Preparado para:</strong> equipo de consultoría</span>
+      <span><strong>Fecha:</strong> 17 de septiembre de 2026</span>
+      <span><strong>Proyecto:</strong> Selector de punto de recogida (app de Shopify)</span>
+      <span><strong>Estado:</strong> para revisión y decisión</span>
+    </div>
+  </header>
+
+  <div class="tldr">
+    <span class="label">En una frase</span>
+    <p>Separar las dos decisiones que suelen mezclarse — <strong>«¿en qué destinos existe la opción de recogida?»</strong> (que resuelve Shopify de forma nativa, con zonas de envío) de <strong>«¿qué agencia(s) cubren ese destino y qué puntos tiene cada una?»</strong> (que es lógica de negocio, y debe vivir en el WS propio) — y dejar que sea el WS quien fusione los puntos de todas las agencias aplicables, en vez de modelar cada agencia como una tarifa de envío distinta en Shopify.</p>
+  </div>
+
+  <nav class="toc" aria-label="Contenido del documento">
+    <a href="#contexto">Contexto</a>
+    <a href="#problema">El problema</a>
+    <a href="#restricciones">Restricciones técnicas</a>
+    <a href="#opciones">Las tres opciones</a>
+    <a href="#recomendacion">Recomendación</a>
+    <a href="#contrato">Contrato con el WS</a>
+    <a href="#decisiones">Decisiones pendientes</a>
+    <a href="#futuro">Evolución futura</a>
+  </nav>
+
+  <section id="contexto">
+    <h2>Contexto</h2>
+    <p>El proyecto añade a las tiendas Shopify de los clientes de Datadec un selector de punto de recogida de paquetes, en dos superficies: un bloque en la página del carrito (disponible en cualquier plan) y una extensión en el checkout nativo (solo tiendas Shopify Plus, que es la mayoría de la cartera de clientes). Los puntos de recogida los sirve un servicio web (WS) alojado en infraestructura de Datadec.</p>
+    <p>Hasta ahora el diseño asumía <strong>una sola agencia de transporte</strong> por tienda. La realidad operativa es otra: <strong>cada tienda puede trabajar con varias agencias a la vez</strong>, y qué agencia aplica depende del mercado y de la dirección del comprador. Este documento resuelve cómo modelar esa variabilidad sin multiplicar el mantenimiento en cada tienda cliente.</p>
+  </section>
+
+  <section id="problema">
+    <h2>El problema, en dos capas</h2>
+    <p>Es fácil tratar «qué opción de recogida mostrar» como una sola pregunta. En realidad son dos, y conviene resolverlas en sitios distintos:</p>
+    <div class="flow">
+      <div class="flow__step">
+        <span class="tag">Capa 1 &middot; Shopify</span>
+        <h3>¿Existe la opción en este destino?</h3>
+        <p>Zonas de envío nativas de Shopify: sí/no hay recogida en punto de conveniencia para este país.</p>
+      </div>
+      <div class="flow__arrow">→</div>
+      <div class="flow__step">
+        <span class="tag">Capa 2 &middot; Vuestro WS</span>
+        <h3>¿Qué agencia(s) cubren este código postal?</h3>
+        <p>Lógica de negocio propia: resuelve agencias aplicables y fusiona sus puntos.</p>
+      </div>
+      <div class="flow__arrow">→</div>
+      <div class="flow__step">
+        <span class="tag">Resultado</span>
+        <h3>Una lista/mapa con todo lo aplicable</h3>
+        <p>El comprador ve los puntos de todas las agencias que le corresponden, cada uno rotulado con la suya.</p>
+      </div>
+    </div>
+    <p>La capa 1 cambia poco y es responsabilidad de cada comercio (dónde vender, qué zonas de envío tiene). La capa 2 cambia con frecuencia (una agencia amplía o retira cobertura) y es conocimiento exclusivo de Datadec — por eso debe vivir en el WS, no en la configuración de Shopify de cada cliente.</p>
+  </section>
+
+  <section id="restricciones">
+    <h2>Restricciones técnicas relevantes</h2>
+    <ul>
+      <li><strong>Dato ya modelado:</strong> cada punto de recogida (<code>PickupPoint</code>) ya lleva un campo <code>carrier</code> desde el primer diseño — fusionar puntos de varias agencias en una sola respuesta no exige cambiar el modelo de datos, solo la lógica de resolución dentro del WS.</li>
+      <li><strong>Datos protegidos del comprador:</strong> la extensión de checkout no puede leer la dirección real del comprador (<code>shippingAddress</code>) sin que Shopify apruebe un acceso de Nivel 2 a datos protegidos — un proceso de revisión, no una concesión inmediata. Cualquier planteamiento que dependa de leer esa dirección directamente queda bloqueado por ese mismo permiso.</li>
+      <li><strong>Alternativa ya validada:</strong> el buscador manual de código postal/ciudad que el comprador escribe dentro de la propia extensión <em>no</em> es un dato protegido de Shopify — es información que el comprador aporta directamente a la app. Es la vía sin fricción de permisos para alimentar la resolución de agencia.</li>
+      <li><strong>Mecanismo nativo en beta:</strong> Shopify tiene una función pensada exactamente para «puntos de recogida de terceros» (<code>pickup_point_delivery_option_generator</code>), pero de acceso restringido y solicitado caso por caso — ver <a href="#futuro">Evolución futura</a>.</li>
+    </ul>
+  </section>
+
+  <section id="opciones">
+    <h2>Las tres opciones planteadas</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Opción</th>
+            <th>Mecanismo</th>
+            <th>Dónde vive la lógica de agencia</th>
+            <th>Mantenimiento por tienda</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1. Una tarifa de envío por agencia</td>
+            <td>Cada agencia es una opción de envío distinta, repartida en las zonas donde cubre.</td>
+            <td>En Shopify (zonas + nombre de cada tarifa)</td>
+            <td>Alto — una tarifa nueva por cada combinación agencia × zona, y hay que retocarla si cambia la cobertura</td>
+          </tr>
+          <tr>
+            <td>2. Una tarifa genérica por zona</td>
+            <td>Una sola opción «Punto de recogida» dada de alta en cada zona con cobertura de al menos una agencia.</td>
+            <td>Repartida — zonas en Shopify, agencia sin resolver</td>
+            <td>Medio — una tarifa por zona, pero no sabe distinguir agencias dentro de la misma zona</td>
+          </tr>
+          <tr class="rec-row">
+            <td>3. Una opción global, agencia resuelta por el WS</td>
+            <td>Una única tarifa «Punto de recogida»; al elegirla, la extensión pide al WS los puntos según lo que el comprador escriba, y el WS decide qué agencia(s) aplican y fusiona sus puntos.</td>
+            <td>En el WS (Datadec)</td>
+            <td>Bajo — el Admin de cada tienda solo declara <em>dónde</em> ofrecer la opción, nunca qué agencia usar ahí</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="recomendacion">
+    <h2>Recomendación</h2>
+    <p><strong>Opción 3</strong>, apoyada en un uso ligero de zonas de Shopify solo para acotar <em>dónde</em> se ofrece la opción (idea que toma prestada de la opción 2), nunca para decidir <em>qué agencia</em> aplica.</p>
+    <h3>Por qué</h3>
+    <ul>
+      <li>La relación destino → agencia es conocimiento de Datadec que cambia con el tiempo; meterla en la configuración de Shopify de cada cliente crea 50 sitios donde puede quedar desactualizada en vez de uno.</li>
+      <li>El comprador ve una sola opción de envío («Punto de recogida»), no una lista de marcas de agencias que no significan nada para él — la elección relevante para el comprador es <em>dónde recoger</em>, no <em>qué logo tiene el mostrador</em>.</li>
+      <li>Evita por completo el permiso de datos protegidos de Nivel 2: la resolución de agencia se apoya en lo que el comprador teclea en el propio buscador de la extensión, no en la dirección real del checkout.</li>
+      <li>Si en el futuro interesa dejar elegir agencia explícitamente (algún comercio quiere que el comprador distinga entre marcas), es un añadido pequeño y contenido en la propia extensión — una fila de filtros «Todas / Agencia A / Agencia B» sobre la lista —, no una reestructuración de zonas de envío.</li>
+    </ul>
+  </section>
+
+  <section id="contrato">
+    <h2>Contrato de datos sugerido con el WS</h2>
+    <p>Punto de partida para que el WS resuelva agencia y fusione resultados sin que la extensión necesite saber nada de agencias por adelantado.</p>
+    <div class="contract">
+      <div class="contract__card">
+        <h3>Petición</h3>
+        <table>
+          <tbody>
+            <tr><td><code>postalCode</code></td><td>Escrito por el comprador en el buscador</td></tr>
+            <tr><td><code>city</code></td><td>Alternativa si no da código postal</td></tr>
+            <tr><td><code>country</code></td><td>Opcional — ver decisión pendiente sobre cómo obtenerlo</td></tr>
+            <tr><td><code>shop</code></td><td>Dominio de la tienda (ya disponible hoy)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="contract__card">
+        <h3>Respuesta</h3>
+        <table>
+          <tbody>
+            <tr><td><code>points[]</code></td><td>Fusionados de todas las agencias aplicables</td></tr>
+            <tr><td><code>points[].carrier</code></td><td>Ya existe en el modelo actual</td></tr>
+            <tr><td><code>points[].distanceKm</code></td><td>Ya existe — se calcula igual, sin distinción de agencia</td></tr>
+            <tr><td><code>carriersAvailable[]</code></td><td>Nuevo — lista de agencias presentes en la respuesta, para alimentar un futuro filtro en la UI</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="decisiones">
+    <h2>Decisiones pendientes</h2>
+    <div class="decision">
+      <span class="decision__mark">Decisión&nbsp;1</span>
+      <div>
+        <p>¿Cómo le llega el país al WS si hace falta para desambiguar (comercios que venden a varios países con formatos de código postal parecidos)?</p>
+        <p>Opción sin fricción de permisos: codificarlo en el nombre de la tarifa de envío por zona (p. ej. «Punto de recogida — ES»), ya que esa tarifa la ha acotado el propio comercio a esa zona.</p>
+      </div>
+    </div>
+    <div class="decision">
+      <span class="decision__mark">Decisión&nbsp;2</span>
+      <div>
+        <p>¿Interesa ya, para el primer lanzamiento, dejar que el comprador filtre por agencia cuando hay varias disponibles, o basta con mostrarlas todas mezcladas y ordenadas por distancia?</p>
+        <p>Recomendación: lanzar sin filtro (más simple) y añadirlo solo si algún comercio lo pide.</p>
+      </div>
+    </div>
+    <div class="decision">
+      <span class="decision__mark">Decisión&nbsp;3</span>
+      <div>
+        <p>¿Merece la pena, en paralelo, solicitar a Shopify acceso a <code>pickup_point_delivery_option_generator</code> (ver más abajo) para evaluar si sustituye esta capa a medio plazo?</p>
+        <p>No bloquea nada de lo anterior — es una vía a explorar en paralelo, no una dependencia.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="futuro">
+    <h2>Evolución futura</h2>
+    <p>Shopify tiene un mecanismo nativo pensado exactamente para «puntos de recogida de terceros» — <code>pickup_point_delivery_option_generator</code> —, hoy en beta cerrada y sujeto a solicitud de acceso caso por caso. A diferencia de la extensión de checkout, esa función corre en el servidor de Shopify y sí tiene acceso a la dirección real del comprador sin pasar por el permiso de datos protegidos, porque no se ejecuta en el navegador. Si en algún momento se concede el acceso, podría sustituir la capa de resolución de agencia por destino sin necesidad de que el comprador escriba nada a mano — pero nada de lo recomendado aquí depende de conseguirlo, y puede evaluarse con calma en paralelo.</p>
+  </section>
+
+  <footer>
+    Preparado a partir del análisis de arquitectura del proyecto «Selector de punto de recogida» — para discusión, no para implementación directa hasta su validación.
+  </footer>
+
+</div>
