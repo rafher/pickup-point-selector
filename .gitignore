@@ -11,6 +11,7 @@ node_modules/
 # Shopify CLI
 .shopify/
 web/.shopify/
+extensions/*/dist/
 
 # Remix / Vite build output
 web/build/
