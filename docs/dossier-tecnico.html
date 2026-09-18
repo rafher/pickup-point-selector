@@ -1,0 +1,514 @@
+<title>Dossier del Selector de Recogida</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f2f4f1;
+    --surface: #ffffff;
+    --surface-2: #eaeee7;
+    --ink: #1b2027;
+    --ink-muted: #5c6570;
+    --border: #dbe0d8;
+    --accent: #24406b;
+    --accent-soft: #e2e8f1;
+    --flag: #935a12;
+    --flag-soft: #f5ead9;
+    --good: #1f7a4d;
+    --good-soft: #dff0e6;
+    --bad: #a3372c;
+    --bad-soft: #f7e3e0;
+    --shadow: 0 1px 2px rgba(20, 24, 20, 0.05), 0 6px 20px rgba(20, 24, 20, 0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14181b; --surface: #1b2126; --surface-2: #212930;
+      --ink: #eef1ee; --ink-muted: #9aa3ab; --border: #2b333a;
+      --accent: #7ea6dd; --accent-soft: #223349;
+      --flag: #e0a24a; --flag-soft: #3a2c15;
+      --good: #5fce9a; --good-soft: #163526;
+      --bad: #ec8579; --bad-soft: #3a1f1b;
+      --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 10px 28px rgba(0,0,0,0.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14181b; --surface: #1b2126; --surface-2: #212930;
+    --ink: #eef1ee; --ink-muted: #9aa3ab; --border: #2b333a;
+    --accent: #7ea6dd; --accent-soft: #223349;
+    --flag: #e0a24a; --flag-soft: #3a2c15;
+    --good: #5fce9a; --good-soft: #163526;
+    --bad: #ec8579; --bad-soft: #3a1f1b;
+    --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 10px 28px rgba(0,0,0,0.4);
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 1rem; line-height: 1.65;
+    padding: 0 18px; padding-block: 0 72px;
+  }
+  h1, h2, h3, .label, nav, .chip, th, button { font-family: "Libre Franklin", system-ui, sans-serif; }
+  h1, h2, h3 { text-wrap: balance; }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.88em; }
+  a { color: var(--accent); }
+
+  .layout {
+    max-width: 1080px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 40px;
+    align-items: start;
+    padding-top: 36px;
+  }
+  @media (max-width: 820px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Sidebar ---------- */
+  aside {
+    position: sticky;
+    top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.82rem;
+  }
+  @media (max-width: 820px) {
+    aside { position: static; flex-direction: row; flex-wrap: wrap; gap: 6px 4px; }
+  }
+  aside .brand { font-weight: 800; font-size: 0.95rem; margin-bottom: 10px; color: var(--ink); }
+  @media (max-width: 820px) { aside .brand { width: 100%; } }
+  aside a {
+    color: var(--ink-muted); text-decoration: none;
+    padding: 6px 8px; border-radius: 6px;
+  }
+  @media (max-width: 820px) {
+    aside a { border: 1px solid var(--border); border-radius: 999px; padding: 5px 10px; }
+  }
+  aside a:hover, aside a:focus-visible { color: var(--accent); background: var(--accent-soft); outline: none; }
+
+  main { display: flex; flex-direction: column; gap: 40px; min-width: 0; }
+
+  /* ---------- Header ---------- */
+  header {
+    display: flex; flex-direction: column; gap: 10px;
+    border-bottom: 2px solid var(--ink); padding-bottom: 22px;
+  }
+  .eyebrow { font-size: 0.72rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  h1 { font-size: clamp(1.7rem, 4vw, 2.3rem); font-weight: 800; margin: 0; letter-spacing: -0.01em; }
+  .dek { font-size: 1.02rem; color: var(--ink-muted); max-width: 62ch; margin: 0; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.78rem; color: var(--ink-muted); margin-top: 4px; }
+  .meta strong { color: var(--ink); font-weight: 600; }
+
+  .tldr {
+    background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 10px;
+    padding: 18px 22px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .tldr .label { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; color: var(--accent); }
+  .tldr p { margin: 0; }
+  .tldr ul { margin: 0; padding-left: 1.2em; }
+
+  section { display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 20px; }
+  h2 { font-size: 1.28rem; font-weight: 700; margin: 0; padding-top: 8px; border-top: 1px solid var(--border); }
+  h3 { font-size: 1rem; font-weight: 600; margin: 8px 0 -4px; }
+  p { margin: 0; max-width: 70ch; }
+  ul, ol { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 7px; max-width: 70ch; }
+  li::marker { color: var(--ink-muted); }
+  strong { font-weight: 600; }
+
+  /* ---------- Status pills (qué hace / qué no hace) ---------- */
+  .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 640px) { .status-grid { grid-template-columns: 1fr; } }
+  .status-card { border-radius: 10px; padding: 16px 18px; border: 1px solid var(--border); background: var(--surface); box-shadow: var(--shadow); }
+  .status-card h3 { margin-top: 0; display: flex; align-items: center; gap: 8px; font-size: 0.95rem; }
+  .status-card.yes { border-top: 3px solid var(--good); }
+  .status-card.no { border-top: 3px solid var(--bad); }
+  .status-card ul { font-size: 0.92rem; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .dot.yes { background: var(--good); }
+  .dot.no { background: var(--bad); }
+
+  /* ---------- Diagram ---------- */
+  .diagram {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px; box-shadow: var(--shadow);
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .diagram-row { display: flex; align-items: center; gap: 0; flex-wrap: wrap; }
+  .diagram-row .arrow { color: var(--ink-muted); font-size: 1.2rem; padding: 0 6px; flex: 0 0 auto; }
+  .box { flex: 1 1 150px; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; background: var(--surface-2); }
+  .box .tag { font-size: 0.64rem; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 700; color: var(--accent); display: block; margin-bottom: 3px; }
+  .box strong { display: block; font-size: 0.85rem; }
+  .box span.d { font-size: 0.76rem; color: var(--ink-muted); }
+  .box.wide { flex-basis: 100%; background: var(--accent-soft); border-color: var(--accent); text-align: center; }
+  @media (max-width: 640px) {
+    .diagram-row { flex-direction: column; align-items: stretch; }
+    .diagram-row .arrow { transform: rotate(90deg); padding: 2px 0; align-self: center; }
+  }
+
+  /* ---------- Tables ---------- */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); }
+  table { border-collapse: collapse; width: 100%; min-width: 560px; font-family: "Libre Franklin", sans-serif; font-size: 0.84rem; }
+  th, td { text-align: left; padding: 11px 13px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  thead th { background: var(--surface-2); font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-muted); }
+  tbody tr:last-child td { border-bottom: none; }
+  td code { white-space: nowrap; }
+  .table-note { font-size: 0.78rem; color: var(--ink-muted); margin-top: -4px; }
+
+  @media print {
+    .layout { grid-template-columns: 1fr; }
+    aside { display: none; }
+    .table-wrap { overflow-x: visible; }
+    table { min-width: 0; table-layout: fixed; font-size: 0.72rem; }
+    th, td { padding: 7px 8px; overflow-wrap: break-word; white-space: normal; }
+    td code, td .mono { white-space: normal; word-break: break-all; }
+  }
+
+  /* ---------- Step list ---------- */
+  .steps { counter-reset: step; display: flex; flex-direction: column; gap: 0; }
+  .step { display: grid; grid-template-columns: 30px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .step:last-child { border-bottom: none; }
+  .step::before {
+    counter-increment: step; content: counter(step);
+    font-family: "Libre Franklin", sans-serif; font-weight: 800; font-size: 0.8rem;
+    color: var(--accent); background: var(--accent-soft); border-radius: 50%;
+    width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+  }
+  .step p { font-size: 0.92rem; }
+  .step strong { display: block; margin-bottom: 2px; }
+
+  /* ---------- Flag / warning callouts ---------- */
+  .flag { display: flex; gap: 12px; background: var(--flag-soft); border: 1px solid var(--flag); border-radius: 10px; padding: 14px 16px; }
+  .flag__mark { font-family: "Libre Franklin", sans-serif; font-weight: 800; font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--flag); flex: 0 0 auto; padding-top: 2px; }
+  .flag p { font-size: 0.92rem; }
+  .flag p + p { margin-top: 6px; color: var(--ink-muted); font-size: 0.85rem; }
+
+  .accesses { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 640px) { .accesses { grid-template-columns: 1fr; } }
+  .access-card { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; background: var(--surface); box-shadow: var(--shadow); }
+  .access-card h3 { margin-top: 0; font-size: 0.88rem; }
+  .access-card dl { margin: 0; display: flex; flex-direction: column; gap: 5px; font-size: 0.82rem; }
+  .access-card dt { color: var(--ink-muted); font-family: "Libre Franklin", sans-serif; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.03em; }
+  .access-card dd { margin: 0 0 4px; }
+
+  footer { border-top: 1px solid var(--border); padding-top: 16px; font-family: "Libre Franklin", sans-serif; font-size: 0.78rem; color: var(--ink-muted); }
+</style>
+
+<div class="layout">
+  <aside aria-label="Contenido del documento">
+    <span class="brand">Dossier técnico</span>
+    <a href="#resumen">Resumen</a>
+    <a href="#alcance">Qué hace / no hace</a>
+    <a href="#arquitectura">Arquitectura</a>
+    <a href="#piezas">Piezas del proyecto</a>
+    <a href="#despliegue">Dónde está desplegado</a>
+    <a href="#flujo">Flujo paso a paso</a>
+    <a href="#variables">Variables de configuración</a>
+    <a href="#cambios">Cómo desplegar cambios</a>
+    <a href="#accesos">Accesos y credenciales</a>
+    <a href="#limitaciones">Limitaciones de plataforma</a>
+    <a href="#ws">Plan: conectar con vuestros WS</a>
+    <a href="#enlaces">Documentos relacionados</a>
+  </aside>
+
+  <main>
+    <header id="resumen">
+      <span class="eyebrow">Dossier técnico &middot; Datadec</span>
+      <h1>Dossier del Selector de Recogida</h1>
+      <p class="dek">Referencia completa del proyecto «Selector de punto de recogida» (app de Shopify) para el traspaso al equipo de producto y desarrollo: qué hace, de qué piezas se compone, dónde vive cada una, qué se configura y dónde, y el plan para sustituir los datos de demostración por los servicios web reales de Datadec.</p>
+      <div class="meta">
+        <span><strong>Preparado para:</strong> product manager y equipo de desarrollo entrante</span>
+        <span><strong>Fecha:</strong> 18 de septiembre de 2026</span>
+        <span><strong>Repositorio:</strong> <a href="https://github.com/rafher/pickup-point-selector">github.com/rafher/pickup-point-selector</a></span>
+        <span><strong>Estado:</strong> MVP funcional en tiendas de prueba, sin servicio real conectado todavía</span>
+      </div>
+    </header>
+
+    <div class="tldr">
+      <span class="label">Resumen en 30 segundos</span>
+      <p>Es una app de Shopify instalable por cualquier comercio de Datadec que añade un selector de punto de recogida en dos sitios: un <strong>bloque de carrito</strong> (cualquier plan) y una <strong>extensión de checkout</strong> (solo Shopify Plus). Ambos comparten un mismo backend en Node/Remix, con una base de datos Postgres para sesiones y ajustes por tienda. Los puntos de recogida hoy son <strong>datos fijos de demostración</strong> — el proyecto está preparado para enchufar el servicio web real sin tocar el bloque ni la extensión, cambiando solo la capa de datos del backend.</p>
+      <ul>
+        <li>Código: <a href="https://github.com/rafher/pickup-point-selector">repositorio en GitHub</a></li>
+        <li>Backend en producción: <code>pickup-point-selector.onrender.com</code> (Render)</li>
+        <li>App en Shopify: «Selector de punto de recogida», organización Datadec S.A.</li>
+      </ul>
+    </div>
+
+    <section id="alcance">
+      <h2>Qué hace hoy / qué no hace</h2>
+      <div class="status-grid">
+        <div class="status-card yes">
+          <h3><span class="dot yes"></span> Hace</h3>
+          <ul>
+            <li>Bloque de carrito con selector de punto de recogida: vista de <strong>lista</strong> y vista de <strong>mapa</strong> (Leaflet + OpenStreetMap, sin API key).</li>
+            <li>Extensión de checkout equivalente, visible solo cuando el comprador elige la tarifa de envío «Puntos» — vista de lista y mapa (con <strong>Google Maps</strong>, ver limitaciones).</li>
+            <li>Ordena los puntos por <strong>distancia</strong> al código postal/ciudad que escribe el comprador (geocodificación aproximada propia, sin servicio externo).</li>
+            <li>Guarda el punto elegido como <strong>atributo del pedido</strong>, visible en el Admin, igual venga del carrito o del checkout.</li>
+            <li>Panel de ajustes en el Admin para que cada tienda configure la URL de su propio servicio de puntos (o siga usando los datos de demostración).</li>
+            <li>Funciona de extremo a extremo hoy mismo con <strong>datos de demostración fijos</strong> (10 puntos repartidos por España).</li>
+          </ul>
+        </div>
+        <div class="status-card no">
+          <h3><span class="dot no"></span> No hace (todavía)</h3>
+          <ul>
+            <li><strong>No habla con ningún servicio real</strong> de ninguna agencia de transporte — ver <a href="#ws">plan de integración</a>.</li>
+            <li><strong>No resuelve varias agencias por tienda/mercado</strong> — el diseño para eso está decidido pero no construido, ver <a href="#enlaces">documento de multi-agencia</a>.</li>
+            <li>No hay una <strong>Shopify Function</strong> que genere la opción de envío «Puntos» dinámicamente — hoy es una tarifa de envío que cada comercio da de alta a mano en su Admin.</li>
+            <li>No autorrellena el buscador de la extensión de checkout con la dirección real del comprador (exige un permiso de Shopify pendiente de solicitar, ver <a href="#limitaciones">limitaciones</a>).</li>
+            <li>No está enviada a revisión ni distribuida a comercios reales — vive en dos tiendas de desarrollo.</li>
+            <li>No tiene tests automatizados.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="arquitectura">
+      <h2>Arquitectura</h2>
+      <p>Dos superficies de comprador, un backend compartido:</p>
+      <div class="diagram">
+        <div class="diagram-row">
+          <div class="box"><span class="tag">Comprador · Carrito</span><strong>Bloque de tema</strong><span class="d">Liquid + JS plano, Leaflet/OSM</span></div>
+          <div class="arrow">→</div>
+          <div class="box"><span class="tag">Mismo origen</span><strong>App Proxy de Shopify</strong><span class="d">/apps/pickup-points/*</span></div>
+          <div class="arrow">→</div>
+          <div class="box"><span class="tag">Backend</span><strong>proxy.points.tsx</strong><span class="d">authenticate.public.appProxy</span></div>
+        </div>
+        <div class="diagram-row">
+          <div class="box"><span class="tag">Comprador · Checkout (Plus)</span><strong>Extensión de checkout</strong><span class="d">Preact, componentes s-*, Google Maps</span></div>
+          <div class="arrow">→</div>
+          <div class="box"><span class="tag">Red directa</span><strong>fetch autenticado</strong><span class="d">token de sesión de checkout</span></div>
+          <div class="arrow">→</div>
+          <div class="box"><span class="tag">Backend</span><strong>api.checkout.points.tsx</strong><span class="d">authenticate.public.checkout + CORS</span></div>
+        </div>
+        <div class="box wide">
+          <strong>web/app/services/pickupPoints.server.ts</strong>
+          <span class="d">Punto único de integración — hoy sirve datos de demostración; mañana, el WS real de Datadec (ver plan de integración)</span>
+        </div>
+        <div class="diagram-row">
+          <div class="box"><span class="tag">Datos propios</span><strong>Postgres (Neon)</strong><span class="d">Sesiones OAuth + ajustes por tienda</span></div>
+          <div class="box"><span class="tag">Solo checkout</span><strong>Google Maps</strong><span class="d">API key compartida de Datadec</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="piezas">
+      <h2>Piezas del proyecto</h2>
+      <p>El repositorio es un monorepo con tres partes independientes (no es un workspace de npm a propósito — ver <a href="#limitaciones">limitaciones</a>):</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Carpeta</th><th>Qué es</th><th>Tecnología</th></tr></thead>
+          <tbody>
+            <tr><td><code>web/</code></td><td>Backend + panel de ajustes embebido en el Admin</td><td>Remix (Node), Prisma, Polaris</td></tr>
+            <tr><td><code>extensions/pickup-point-picker/</code></td><td>Bloque de carrito (Theme App Extension)</td><td>Liquid, JS/CSS planos</td></tr>
+            <tr><td><code>extensions/pickup-point-checkout/</code></td><td>Extensión de checkout (Checkout UI Extension)</td><td>Preact + componentes web <code>s-*</code> de Shopify</td></tr>
+            <tr><td><code>docs/</code></td><td>Documentación de referencia (este dossier, el análisis de multi-agencia, otros apuntes)</td><td>HTML/PDF</td></tr>
+            <tr><td><code>render.yaml</code></td><td>Plantilla de despliegue en Render (no activa; el servicio actual se configuró a mano — ver <a href="#despliegue">despliegue</a>)</td><td>Blueprint de Render</td></tr>
+            <tr><td><code>shopify.app.test-plugin.toml</code></td><td>Configuración de la app en Shopify — único fichero de config activo</td><td>Config as code del CLI</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>Backend (<code>web/app/</code>)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Fichero</th><th>Función</th></tr></thead>
+          <tbody>
+            <tr><td><code>routes/proxy.points.tsx</code></td><td>Endpoint que consume el bloque de carrito, vía App Proxy</td></tr>
+            <tr><td><code>routes/api.checkout.points.tsx</code></td><td>Endpoint que consume la extensión de checkout; añade CORS y la API key de Google Maps a la respuesta</td></tr>
+            <tr><td><code>routes/app._index.tsx</code></td><td>Pantalla de ajustes en el Admin (URL/API key del servicio real, vista por defecto)</td></tr>
+            <tr><td><code>routes/app.tsx</code></td><td>Layout del admin embebido (Polaris + App Bridge)</td></tr>
+            <tr><td><code>routes/auth.$.tsx</code>, <code>routes/auth.login/</code></td><td>OAuth de instalación</td></tr>
+            <tr><td><code>routes/webhooks.app.uninstalled.tsx</code></td><td>Limpia sesión y ajustes de una tienda al desinstalar</td></tr>
+            <tr><td><code>services/pickupPoints.server.ts</code></td><td><strong>Punto único</strong> de obtención de puntos: decide demo vs. real, normaliza la respuesta externa, calcula y ordena por distancia</td></tr>
+            <tr><td><code>services/pickupPoints.mock.ts</code></td><td>10 puntos de demostración fijos (España)</td></tr>
+            <tr><td><code>services/geo.server.ts</code></td><td>Distancia (Haversine) y geocodificación aproximada propia (centroides de las 52 provincias)</td></tr>
+            <tr><td><code>shopify.server.ts</code></td><td>Configuración de <code>@shopify/shopify-app-remix</code> (OAuth, sesiones, webhooks)</td></tr>
+            <tr><td><code>prisma/schema.prisma</code></td><td>Modelos <code>Session</code> (OAuth) y <code>ShopSettings</code> (ajustes por tienda)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="despliegue">
+      <h2>Dónde está desplegado</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Servicio</th><th>Proveedor</th><th>Identificador</th><th>Para qué</th></tr></thead>
+          <tbody>
+            <tr><td>Código fuente</td><td>GitHub</td><td><code>rafher/pickup-point-selector</code></td><td>Repositorio único, rama <code>main</code></td></tr>
+            <tr><td>Backend</td><td>Render (Free)</td><td><code>pickup-point-selector.onrender.com</code></td><td>API + Admin embebido; auto-despliega en cada push a <code>main</code></td></tr>
+            <tr><td>Base de datos</td><td>Neon (Postgres)</td><td>proyecto <code>pickup-point-selector</code>, región Londres (AWS eu-west-2)</td><td>Sesiones OAuth + <code>ShopSettings</code></td></tr>
+            <tr><td>App de Shopify</td><td>Shopify Partners / Dev Dashboard</td><td>Org <strong>Datadec S.A.</strong> (id 211611850) &middot; App «Selector de punto de recogida» (id 423273267201) &middot; <code>client_id 0249018a05a22cbdb144d9ffc8542599</code></td><td>Registro de la app, extensiones, versiones publicadas</td></tr>
+            <tr><td>Tienda de desarrollo — carrito</td><td>Shopify (plan Basic)</td><td><code>datadec-dev-pickup.myshopify.com</code></td><td>Probar el bloque de carrito (cualquier plan)</td></tr>
+            <tr><td>Tienda de desarrollo — checkout</td><td>Shopify (plan <strong>Plus</strong>)</td><td><code>datadec-dev-extension.myshopify.com</code></td><td>Probar la extensión de checkout (exige Plus, ver <a href="#limitaciones">limitaciones</a>)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">Solo hay un fichero de configuración de app activo: <code>shopify.app.test-plugin.toml</code>. Hubo un <code>shopify.app.toml</code> original y un <code>shopify.app.datadec.toml</code> vinculado por error a otra app — ambos se eliminaron del repo; si aparecen en un clon antiguo, se ignoran.</p>
+    </section>
+
+    <section id="flujo">
+      <h2>Flujo paso a paso</h2>
+      <h3>Carrito (cualquier plan)</h3>
+      <div class="steps">
+        <div class="step"><p><strong>El comprador pulsa el campo «Punto de recogida»</strong> en la página del carrito.</p></div>
+        <div class="step"><p><strong>El bloque abre un modal</strong> y pide los puntos a <code>/apps/pickup-points/points</code> — mismo dominio que la tienda, gracias al App Proxy, sin problemas de CORS.</p></div>
+        <div class="step"><p><strong>El backend resuelve el origen</strong> (código postal/ciudad escrito por el comprador), calcula distancias y devuelve los puntos ordenados.</p></div>
+        <div class="step"><p><strong>El comprador elige un punto y confirma</strong> — el bloque llama a <code>/cart/update.js</code> guardando dos atributos: <code>Punto de recogida</code> (texto legible) y <code>_pickup_point_id</code> (interno).</p></div>
+      </div>
+      <h3>Checkout (solo Shopify Plus)</h3>
+      <div class="steps">
+        <div class="step"><p><strong>El comprador elige la tarifa de envío «Puntos»</strong> (dada de alta a mano por el comercio en Configuración → Envío y entrega).</p></div>
+        <div class="step"><p><strong>La extensión detecta esa selección</strong> leyendo <code>shopify.deliveryGroups</code> y se muestra — permanece oculta con cualquier otra tarifa.</p></div>
+        <div class="step"><p><strong>Pide los puntos</strong> a <code>api.checkout.points.tsx</code> directamente por red (no hay App Proxy en checkout), autenticando con el token de sesión de la propia extensión.</p></div>
+        <div class="step"><p><strong>El comprador elige y confirma</strong> — se guardan los mismos dos atributos que en el carrito, vía <code>shopify.applyAttributeChange</code>.</p></div>
+      </div>
+    </section>
+
+    <section id="variables">
+      <h2>Variables de configuración</h2>
+      <p>Hay <strong>tres niveles</strong> distintos de configuración — no confundirlos es importante para el equipo que continúe:</p>
+
+      <h3>1. Variables de entorno del backend (globales, un valor para toda la app)</h3>
+      <p class="table-note">En local: <code>web/.env</code>. En producción: panel de Render → el servicio → pestaña <em>Environment</em>.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Variable</th><th>Para qué</th></tr></thead>
+          <tbody>
+            <tr><td><code>SHOPIFY_API_KEY</code></td><td>= <code>client_id</code> de la app (no es secreto)</td></tr>
+            <tr><td><code>SHOPIFY_API_SECRET</code></td><td>Client secret — Dev Dashboard → app → Configuración → Credenciales</td></tr>
+            <tr><td><code>SCOPES</code></td><td>Vacío a propósito (la app no necesita permisos sobre datos de la tienda)</td></tr>
+            <tr><td><code>SHOPIFY_APP_URL</code></td><td>URL pública del backend (hoy, la de Render)</td></tr>
+            <tr><td><code>DATABASE_URL</code></td><td>Conexión Postgres <strong>agrupada</strong> (pooler) — la usa la app en marcha</td></tr>
+            <tr><td><code>DIRECT_DATABASE_URL</code></td><td>Conexión Postgres <strong>directa</strong> — la usa <code>prisma migrate</code> al desplegar</td></tr>
+            <tr><td><code>PICKUP_POINTS_API_URL</code> / <code>_API_KEY</code></td><td>Servicio real de puntos, <strong>a nivel global/por defecto</strong> — vacío hoy (usa demo). Cada tienda puede tener su propio valor, ver abajo</td></tr>
+            <tr><td><code>GOOGLE_MAPS_API_KEY</code></td><td>Key compartida de Datadec para el mapa de la extensión de <strong>checkout</strong> (el bloque de carrito no la necesita, usa OpenStreetMap)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>2. Ajustes por tienda (cada comercio instalado configura los suyos)</h3>
+      <p class="table-note">Se editan desde el propio Admin de cada tienda → la app → pantalla de ajustes (<code>web/app/routes/app._index.tsx</code>), y se guardan en la tabla <code>ShopSettings</code> de la base de datos. Tienen prioridad sobre las variables de entorno globales.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Campo</th><th>Para qué</th></tr></thead>
+          <tbody>
+            <tr><td><code>pickupApiUrl</code></td><td>URL del servicio de puntos de <strong>esa</strong> tienda, si es distinto del global</td></tr>
+            <tr><td><code>pickupApiKey</code></td><td>API key de ese servicio (se envía como <code>Authorization: Bearer</code>)</td></tr>
+            <tr><td><code>defaultView</code></td><td><code>list</code> o <code>map</code> — vista inicial del bloque de carrito</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>3. Ajustes visuales del bloque de carrito (por tema, sin tocar código)</h3>
+      <p class="table-note">Editor de temas de cada tienda → bloque «Punto de recogida» → panel de ajustes del bloque (definidos en el <code>{% schema %}</code> de <code>pickup-point-picker.liquid</code>).</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Campo</th><th>Por defecto</th></tr></thead>
+          <tbody>
+            <tr><td>Etiqueta, placeholder, título del modal, texto de confirmación</td><td>«Punto de recogida», «Selecciona un punto de recogida», «Elige tu punto de recogida», «Confirmar punto de recogida»</td></tr>
+            <tr><td>Textos de las pestañas Lista/Mapa, buscador, error</td><td>«Lista», «Mapa», «Tu código postal o ciudad», mensaje de error genérico</td></tr>
+            <tr><td>Vista inicial, color de acento, nombre del atributo del pedido</td><td><code>list</code>, <code>#1a1a1a</code>, «Punto de recogida»</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flag">
+        <span class="flag__mark">A tener en cuenta</span>
+        <div>
+          <p>La extensión de <strong>checkout</strong> no tiene panel de ajustes por tema — sus textos están en un diccionario dentro del propio código (<code>Checkout.jsx</code>), y la URL del backend está <strong>hardcodeada</strong> como constante (<code>BACKEND_URL</code>). Cambiar cualquiera de las dos cosas exige editar código y volver a desplegar la extensión, no es autoservicio para el comercio todavía.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="cambios">
+      <h2>Cómo desplegar cambios</h2>
+      <h3>Backend (<code>web/</code>)</h3>
+      <p>Automático: al hacer <code>git push</code> a <code>main</code>, Render reconstruye y despliega solo (build: <code>npm install && npx prisma generate && npx prisma migrate deploy && npm run build</code>; arranque: <code>npm run start</code>).</p>
+      <h3>Extensiones (bloque de carrito + extensión de checkout)</h3>
+      <p>Manual, desde la raíz del repo:</p>
+      <p><code>npx shopify app deploy --allow-updates</code></p>
+      <p>Publica una nueva versión de la app en Shopify con el contenido actual de ambas carpetas de <code>extensions/</code>. No hace falta reinstalar la app en las tiendas para que los cambios de <strong>código</strong> de una extensión ya publicada lleguen — sí hace falta reinstalar cuando cambia algo de <strong>registro</strong> de la app (App Proxy, capacidades como <code>network_access</code>) — ver <a href="#limitaciones">limitaciones</a>.</p>
+      <div class="flag">
+        <span class="flag__mark">Evitar</span>
+        <div>
+          <p>No usar <code>shopify app dev</code> para el día a día: levanta un túnel temporal y, por tener <code>automatically_update_urls_on_dev = true</code>, puede sobrescribir <code>application_url</code>/<code>app_proxy.url</code> del <code>.toml</code> con la URL de ese túnel en vez de la de Render. Solo usarlo a propósito, sabiendo que luego hay que volver a dejar esas URLs apuntando a producción antes del siguiente <code>deploy</code>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="accesos">
+      <h2>Accesos y credenciales</h2>
+      <p>Por seguridad, este documento no incluye contraseñas ni claves — solo dónde están.</p>
+      <div class="accesses">
+        <div class="access-card">
+          <h3>Cuenta de Shopify Partners</h3>
+          <dl>
+            <dt>Quién la tiene</dt><dd>Fernando Izquierdo (propietario de la organización Datadec S.A. en Partners)</dd>
+            <dt>Qué da acceso a</dt><dd>Dev Dashboard de la app, Partner Dashboard clásico, las dos tiendas de desarrollo</dd>
+          </dl>
+        </div>
+        <div class="access-card">
+          <h3>Render</h3>
+          <dl>
+            <dt>Dónde</dt><dd>dashboard.render.com → workspace Datadec → servicio <code>pickup-point-selector</code></dd>
+            <dt>Qué hay ahí</dt><dd>Variables de entorno, logs de despliegue, historial de deploys</dd>
+          </dl>
+        </div>
+        <div class="access-card">
+          <h3>Neon (base de datos)</h3>
+          <dl>
+            <dt>Dónde</dt><dd>console.neon.tech → proyecto <code>pickup-point-selector</code></dd>
+            <dt>Qué hay ahí</dt><dd>Cadenas de conexión (agrupada y directa), rama <code>production</code></dd>
+          </dl>
+        </div>
+        <div class="access-card">
+          <h3>Contraseñas de escaparate</h3>
+          <dl>
+            <dt>Dónde</dt><dd>Admin de cada tienda de desarrollo → Tienda online → Preferencias</dd>
+            <dt>Nota</dt><dd>Son dos contraseñas distintas, una por tienda — no la misma</dd>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section id="limitaciones">
+      <h2>Limitaciones y comportamientos de plataforma a tener en cuenta</h2>
+      <p>Cosas descubiertas construyendo este MVP que le ahorrarán tiempo al equipo entrante:</p>
+      <ul>
+        <li><strong>Node fijado a 20.x</strong> (<code>web/.node-version</code> + <code>engines</code> en <code>package.json</code>): Render resolvía por defecto una versión demasiado nueva que colgaba el build sin dar error.</li>
+        <li><strong><code>web/</code> no es un workspace de npm a propósito</strong>: serlo hacía que Render instalara las dependencias en el <code>node_modules</code> de la raíz del repo en vez del de <code>web/</code>, y el comando de build no encontraba <code>remix</code>. Para desarrollo local: <code>npm install</code> en la raíz (CLI) y <code>cd web && npm install</code> aparte.</li>
+        <li><strong>Acceso de red de la extensión de checkout</strong> (<code>network_access</code>): hace falta aprobarlo una vez en el Partner Dashboard clásico (Apps → API access → «Permitir acceso de red…») — el Dev Dashboard nuevo no tiene ese control todavía (hueco conocido de su migración).</li>
+        <li><strong>Datos protegidos del comprador (Nivel 2)</strong>: la extensión de checkout no puede leer <code>shopify.shippingAddress</code> sin que Shopify apruebe ese acceso — proceso de revisión, no instantáneo. Por eso el buscador de la extensión es manual, no autorrellenado. Si se solicita y se concede, se puede retomar el autorrelleno (código ya explorado, revertido por ahora).</li>
+        <li><strong>Las tiendas de desarrollo «Basic» no muestran los bloques de checkout Plus-only en el editor</strong>, aunque el plan de Partners diga «Developer Preview». Hay que crear la tienda de desarrollo eligiendo explícitamente <strong>«Shopify plan: Plus»</strong> al crearla.</li>
+        <li><strong>Tras cambiar el App Proxy o las capacidades de una extensión</strong>, a veces la tienda necesita <strong>reinstalar la app</strong> (desinstalar + volver a instalar) para que el cambio de registro se refleje — no está documentado por Shopify, se detectó empíricamente.</li>
+        <li><strong>Google Maps API key compartida</strong>: al ser una sola key de Datadec para todas las tiendas instaladas, hay que ir añadiendo el dominio de cada cliente nuevo a sus restricciones de referencia HTTP en Google Cloud Console — tarea de mantenimiento recurrente, no automática.</li>
+        <li><strong>La opción de envío «Puntos» es manual, no una Shopify Function</strong>: cada comercio tiene que darla de alta a mano en cada zona de envío donde quiera ofrecer recogida. La extensión de checkout la detecta comparando el <em>título</em> de la tarifa elegida (configurable en <code>PICKUP_DELIVERY_OPTION_TITLE</code> dentro de <code>Checkout.jsx</code>), no por un identificador estable.</li>
+      </ul>
+    </section>
+
+    <section id="ws">
+      <h2>Plan: conectar con los servicios web reales de Datadec</h2>
+      <p>Hoy <code>getPickupPoints()</code> (en <code>pickupPoints.server.ts</code>) es el único punto de la aplicación que sabe de dónde vienen los puntos — ni el bloque de carrito, ni la extensión de checkout, ni las rutas que los exponen necesitan cambiar cuando se conecte el servicio real.</p>
+      <div class="steps">
+        <div class="step"><p><strong>Resolver primero el diseño multi-agencia</strong> — ver el documento dedicado (enlace abajo). Condiciona la forma exacta del contrato del paso siguiente si un mismo comercio puede tener varias agencias.</p></div>
+        <div class="step"><p><strong>Conseguir el contrato real del WS</strong> del equipo de infraestructuras de Datadec: URL base, autenticación (hoy se asume <code>Authorization: Bearer &lt;api key&gt;</code>, a confirmar), forma exacta de la petición y la respuesta, límites de uso/caché recomendados, formato de errores.</p></div>
+        <div class="step"><p><strong>Ajustar <code>normalizeExternalResponse()</code></strong> en <code>pickupPoints.server.ts</code> para traducir la forma real del WS a <code>PickupPoint</code> — hoy admite de forma laxa nombres de campo en inglés o español como punto de partida razonable, pero hay que ajustarlo al contrato real exacto.</p></div>
+        <div class="step"><p><strong>Configurar <code>PICKUP_POINTS_API_URL</code>/<code>_API_KEY</code></strong> (global en Render, o por tienda desde el Admin) apuntando al WS real — en cuanto haya valor, deja de usarse el mock automáticamente, sin más cambios de código.</p></div>
+        <div class="step"><p><strong>Probar de extremo a extremo</strong> en una tienda de desarrollo, comprobando en particular: tiempos de respuesta del WS real bajo el modal (hoy no hay caché ni timeout propios — a valorar si hace falta añadir alguno), y qué pasa si el WS falla (hoy cae automáticamente al listado de demostración, a decidir si ese es el comportamiento deseado en producción o si debería mostrar un error explícito).</p></div>
+        <div class="step"><p><strong>Revisar las decisiones pendientes</strong> del documento de multi-agencia (cómo le llega el país al WS, si hace falta un filtro de agencia en la UI) antes de dar el WS real por cerrado.</p></div>
+      </div>
+    </section>
+
+    <section id="enlaces">
+      <h2>Documentos relacionados</h2>
+      <ul>
+        <li><a href="https://github.com/rafher/pickup-point-selector/blob/main/README.md">README del repositorio</a> — puesta en marcha local, arquitectura del backend con más detalle</li>
+        <li><a href="https://github.com/rafher/pickup-point-selector/blob/main/docs/puntos-recogida-multi-agencia.html">Puntos de Recogida Multi-Agencia</a> — documento de decisión sobre cómo modelar varias agencias de transporte por tienda/mercado</li>
+      </ul>
+    </section>
+
+    <footer>
+      Dossier preparado a partir del desarrollo del MVP del proyecto «Selector de punto de recogida». Refleja el estado del repositorio a 18 de septiembre de 2026 — verificar contra el código antes de dar por buena cualquier ruta o nombre de fichero citado aquí.
+    </footer>
+  </main>
+</div>
